@@ -20,6 +20,7 @@
 #include "ui.h"
 #include "button_gpio.h"
 #include "screens.h"
+#include "vars.h"
 
 
 
@@ -56,7 +57,7 @@ static camera_config_t camera_config = {
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
     .pixel_format = PIXFORMAT_JPEG, 
-    .frame_size = FRAMESIZE_VGA,        // 640x480 原始输入
+    .frame_size = FRAMESIZE_P_HD,        // 640x480 原始输入
     .jpeg_quality = 12, 
     .fb_count = 2,                      // 预览流建议使用双缓冲
     .fb_location = CAMERA_FB_IN_PSRAM,
@@ -70,20 +71,36 @@ static void get_uptime_hhmmss(char *out, size_t len) {
     snprintf(out, len, "%02d%02d%02d", (int)(sec/3600)%24, (int)(sec/60)%60, (int)sec%60);
 }
 
+
+
+
+
 // --- 保存照片到 SD 卡 ---
 static void save_to_sd(camera_fb_t *fb) {
     char ts[16], filename[64];
     get_uptime_hhmmss(ts, sizeof(ts));
     snprintf(filename, sizeof(filename), "/sdcard/IMG_%s.jpg", ts);
+
+    set_var_shot_info("拍照中");
+
+
     
     FILE *f = fopen(filename, "wb");
     if (f) {
         fwrite(fb->buf, 1, fb->len, f);
+      
+               
         fclose(f);
         ESP_LOGI(TAG, "照片已保存: %s", filename);
+        // set_var_shot_info("拍照完成,照片已保存到");
+        // set_var_shot_info(filename);
+
     } else {
         ESP_LOGE(TAG, "文件保存失败，请检查文件系统或SD卡");
     }
+
+ 
+    set_var_shot_info(filename);
 }
 
 // --- 按钮单击回调 ---
@@ -120,8 +137,8 @@ void cam_render_task(void *pvParam) {
         return;
     }
 
-    // 1. 在 PSRAM 分配最终显示 Buffer (168x224, RGB565 每个像素2字节)
-    cam_buf = (uint8_t *)heap_caps_malloc(168 * 224 * 2, MALLOC_CAP_SPIRAM);
+    // 1. 在 PSRAM 分配最终显示 Buffer (144x256, RGB565 每个像素2字节)
+    cam_buf = (uint8_t *)heap_caps_malloc(144 * 256 * 2, MALLOC_CAP_SPIRAM);
     if (!cam_buf) {
         ESP_LOGE(TAG, "cam_buf 分配失败");
         vTaskDelete(NULL);
@@ -130,10 +147,10 @@ void cam_render_task(void *pvParam) {
     
     // 2. 初始化显示描述符
     cam_dsc.header.cf = LV_COLOR_FORMAT_RGB565;
-    cam_dsc.header.w  = 168;
-    cam_dsc.header.h  = 224;
-    cam_dsc.header.stride = 168 * 2;
-    cam_dsc.data_size = 168 * 224 * 2;
+    cam_dsc.header.w  = 144;
+    cam_dsc.header.h  = 256;
+    cam_dsc.header.stride = 144 * 2;
+    cam_dsc.data_size = 144 * 256 * 2;
     cam_dsc.data = cam_buf;
 
     while (1) {
@@ -167,8 +184,8 @@ void cam_render_task(void *pvParam) {
         // --- 解码并推送到 UI ---
         jpeg_dec_config_t config = DEFAULT_JPEG_DEC_CONFIG();
         config.output_type = JPEG_PIXEL_FORMAT_RGB565_LE;
-        config.scale.width = 168; 
-        config.scale.height = 224;
+        config.scale.width = 144; 
+        config.scale.height = 256;
 
         jpeg_dec_handle_t dec;
         jpeg_dec_io_t io = { .inbuf = fb->buf, .inbuf_len = fb->len };
@@ -176,12 +193,12 @@ void cam_render_task(void *pvParam) {
 
         if (jpeg_dec_open(&config, &dec) == JPEG_ERR_OK) {
             if (jpeg_dec_parse_header(dec, &io, &info) == JPEG_ERR_OK) {
-                uint8_t *decoded = jpeg_calloc_align(168 * 224 * 2, 16);
+                uint8_t *decoded = jpeg_calloc_align(144 * 256 * 2, 16);
                 if (decoded) {
                     io.outbuf = decoded;
                     if (jpeg_dec_process(dec, &io) == JPEG_ERR_OK) {
                         // 拷贝解码数据到预览 Buffer
-                        memcpy(cam_buf, decoded, 168 * 224 * 2);
+                        memcpy(cam_buf, decoded, 144 * 256 * 2);
                         // 更新 LVGL 对象源并重绘
                         if (lvgl_port_lock(pdMS_TO_TICKS(10))) {
                             lv_image_set_src(cam_img_obj, &cam_dsc);

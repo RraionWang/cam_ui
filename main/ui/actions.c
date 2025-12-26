@@ -67,3 +67,9 @@ void action_set_focus_group(lv_event_t *e) {
 }
 
 
+
+// 重新刷新sd卡
+void action_refresh_sd(lv_event_t *e) {
+    // TODO: Implement action refresh_sd here
+        fill_jpg_list(objects.file_list_obj) ; 
+}

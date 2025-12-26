@@ -192,7 +192,9 @@ void init_all_focus_group(){
 
 
     lv_group_set_wrap(g_focus_group_browser_page, true);   // ⭐ 关键
-    lv_group_add_obj(g_focus_group_browser_page,objects.file_list_obj);
+
+    // 不要选中列表为可聚焦的，这样当切换到最后一个的时候就会出现选中
+    // lv_group_add_obj(g_focus_group_browser_page,objects.file_list_obj);
     lv_group_add_obj(g_focus_group_browser_page,objects.bt_back_from_browser);
 
 lv_group_set_wrap(g_focus_group_shot, true);   // ⭐ 关键

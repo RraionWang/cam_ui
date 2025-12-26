@@ -140,16 +140,17 @@ void create_screen_shot() {
             // shot_window_obj
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.shot_window_obj = obj;
-            lv_obj_set_pos(obj, 48, 2);
-            lv_obj_set_size(obj, 224, 168);
+            lv_obj_set_pos(obj, 30, 20);
+            lv_obj_set_size(obj, 260, 148);
         }
         {
             // bt_back_from_shot
             lv_obj_t *obj = lv_button_create(parent_obj);
             objects.bt_back_from_shot = obj;
-            lv_obj_set_pos(obj, 291, 2);
-            lv_obj_set_size(obj, 29, 29);
+            lv_obj_set_pos(obj, 302, 0);
+            lv_obj_set_size(obj, 18, 15);
             lv_obj_add_event_cb(obj, event_handler_cb_shot_bt_back_from_shot, LV_EVENT_ALL, flowState);
+            lv_obj_set_style_bg_color(obj, lv_color_hex(0xffeb3a3a), LV_PART_MAIN | LV_STATE_DEFAULT);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -161,6 +162,14 @@ void create_screen_shot() {
                 }
             }
         }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.obj0 = obj;
+            lv_obj_set_pos(obj, 30, 1);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &ui_font_cn_font_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
     }
     
     tick_screen_shot();
@@ -169,6 +178,15 @@ void create_screen_shot() {
 void tick_screen_shot() {
     void *flowState = getFlowState(0, 1);
     (void)flowState;
+    {
+        const char *new_val = evalTextProperty(flowState, 4, 3, "Failed to evaluate Text in Label widget");
+        const char *cur_val = lv_label_get_text(objects.obj0);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.obj0;
+            lv_label_set_text(objects.obj0, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
 }
 
 void create_screen_browser_page() {
@@ -205,8 +223,8 @@ void create_screen_browser_page() {
             // pic_window_obj
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.pic_window_obj = obj;
-            lv_obj_set_pos(obj, 144, 38);
-            lv_obj_set_size(obj, 160, 120);
+            lv_obj_set_pos(obj, 191, 6);
+            lv_obj_set_size(obj, 96, 160);
             lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_pad_right(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -220,7 +238,7 @@ void create_screen_browser_page() {
             lv_obj_t *obj = lv_list_create(parent_obj);
             objects.file_list_obj = obj;
             lv_obj_set_pos(obj, 0, 0);
-            lv_obj_set_size(obj, 133, 172);
+            lv_obj_set_size(obj, 177, 172);
             lv_obj_add_event_cb(obj, event_handler_cb_browser_page_file_list_obj, LV_EVENT_ALL, flowState);
             lv_obj_add_state(obj, LV_STATE_FOCUSED|LV_STATE_FOCUS_KEY|LV_STATE_PRESSED);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -240,7 +258,7 @@ void tick_screen_browser_page() {
 
 
 static const char *screen_names[] = { "Main", "shot", "browser_page" };
-static const char *object_names[] = { "main", "shot", "browser_page", "bt_browser_pics", "bt_shot", "bt_back_from_shot", "bt_back_from_browser", "file_list_obj", "shot_window_obj", "pic_window_obj" };
+static const char *object_names[] = { "main", "shot", "browser_page", "bt_browser_pics", "bt_shot", "bt_back_from_shot", "bt_back_from_browser", "file_list_obj", "shot_window_obj", "obj0", "pic_window_obj" };
 
 
 typedef void (*tick_screen_func_t)();

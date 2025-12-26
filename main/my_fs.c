@@ -347,9 +347,9 @@ static void show_jpg_in_obj(lv_obj_t *parent, uint8_t *rgb565, int w, int h)
 
     static lv_image_dsc_t img_dsc; // 注意：如果是单实例预览，dsc 可以静态
     img_dsc.header.cf = LV_COLOR_FORMAT_RGB565;
-    img_dsc.header.w  = w;
-    img_dsc.header.h  = h;
-    img_dsc.header.stride = w * 2;
+    img_dsc.header.w  = h;
+    img_dsc.header.h  = w;
+    img_dsc.header.stride = h * 2;
     img_dsc.data_size = w * h * 2;
     img_dsc.data = rgb565;
 
@@ -386,7 +386,7 @@ void load_sd_jpg_to_obj(const char* path, lv_obj_t *obj)
     // 解码为 160x120 (请确保你的预览框 obj 也是这个尺寸)
     jpeg_error_t ret = esp_jpeg_decode_to_rgb565(
         jpg_buf, jpg_len,
-        160, 120,
+        96, 160,
         &rgb565, &rgb_len
     );
 
@@ -398,8 +398,9 @@ void load_sd_jpg_to_obj(const char* path, lv_obj_t *obj)
     }
 
     // 显示图片
-    show_jpg_in_obj(obj, rgb565, 160, 120);
+    show_jpg_in_obj(obj, rgb565, 160, 96);
 }
+
 
 
 

@@ -22,6 +22,8 @@ enum FlowGlobalVariables {
 
 extern int32_t get_var_screen_id();
 extern void set_var_screen_id(int32_t value);
+extern const char *get_var_shot_info();
+extern void set_var_shot_info(const char *value);
 
 
 #ifdef __cplusplus

@@ -17,6 +17,7 @@ typedef struct _objects_t {
     lv_obj_t *bt_back_from_browser;
     lv_obj_t *file_list_obj;
     lv_obj_t *shot_window_obj;
+    lv_obj_t *obj0;
     lv_obj_t *pic_window_obj;
 } objects_t;
 
