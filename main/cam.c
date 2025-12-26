@@ -61,6 +61,7 @@ static camera_config_t camera_config = {
     .fb_count = 2,                      // 预览流建议使用双缓冲
     .fb_location = CAMERA_FB_IN_PSRAM,
     .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
+    
 };
 
 // --- 生成时间戳文件名 ---
@@ -207,6 +208,19 @@ void cam_init_and_start(lv_obj_t *ui_container) {
         ESP_LOGE(TAG, "相机初始化失败");
         return;
     }
+
+
+    // 添加代码
+       sensor_t *s = esp_camera_sensor_get();
+    if (s) {
+        s->set_hmirror(s, 0); // 关键
+        s->set_vflip(s, 1);   // 视情况
+    
+    }
+
+
+
+
 
     // 2. 初始化物理按键 (GPIO 0)
     const button_config_t btn_cfg = {0};
