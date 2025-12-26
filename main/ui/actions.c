@@ -56,6 +56,14 @@ void action_set_focus_group(lv_event_t *e) {
 
        break ;
 
+    case 3 :
+  
+     lv_indev_set_group(indev,g_focus_group_letter_page);
+       g_camera_streaming = false ;
+       ESP_LOGI("TAG","切换焦点组为信件页面");
+
+       break ;
+
    
    default:
      ESP_LOGI("TAG","切换焦点组为main页面");

@@ -176,6 +176,7 @@ void read_cb(lv_indev_t* indev, lv_indev_data_t* data)
 lv_group_t* g_focus_group_main ;
 lv_group_t* g_focus_group_shot ;
 lv_group_t* g_focus_group_browser_page ;
+lv_group_t* g_focus_group_letter_page ;
 
 #include "screens.h"
 
@@ -183,12 +184,15 @@ lv_group_t* g_focus_group_browser_page ;
 
 void init_all_focus_group(){
        g_focus_group_main = lv_group_create();
-          g_focus_group_shot = lv_group_create();
+    g_focus_group_shot = lv_group_create();
              g_focus_group_browser_page = lv_group_create();
+             g_focus_group_letter_page = lv_group_create() ; 
 
-             lv_group_set_wrap(g_focus_group_main, true);   // ⭐ 关键
+    lv_group_set_wrap(g_focus_group_main, true);   // ⭐ 关键
     lv_group_add_obj(g_focus_group_main,objects.bt_browser_pics);
     lv_group_add_obj(g_focus_group_main,objects.bt_shot);
+    lv_group_add_obj(g_focus_group_main,objects.bt_letter);
+
 
 
     lv_group_set_wrap(g_focus_group_browser_page, true);   // ⭐ 关键
@@ -197,8 +201,14 @@ void init_all_focus_group(){
     // lv_group_add_obj(g_focus_group_browser_page,objects.file_list_obj);
     lv_group_add_obj(g_focus_group_browser_page,objects.bt_back_from_browser);
 
-lv_group_set_wrap(g_focus_group_shot, true);   // ⭐ 关键
+
+
+    lv_group_set_wrap(g_focus_group_shot, true);   // ⭐ 关键
     lv_group_add_obj(g_focus_group_shot,objects.bt_back_from_shot);
+
+
+    lv_group_set_wrap(g_focus_group_letter_page, true);   // ⭐ 关键
+    lv_group_add_obj(g_focus_group_letter_page,objects.bt_back_from_letter);
 
 }
 

@@ -457,6 +457,7 @@ void fill_jpg_list(lv_obj_t *list)
             // 2. 绑定聚焦事件
             // 我们不传 flowState，而是直接传 NULL 或者特定的上下文
             lv_obj_add_event_cb(btn, my_jpg_preview_cb, LV_EVENT_FOCUSED, NULL);
+         
         }
     }
     closedir(dir);

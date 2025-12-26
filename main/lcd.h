@@ -24,4 +24,5 @@ extern  lv_indev_t* indev  ;
 extern lv_group_t* g_focus_group_main ;
 extern lv_group_t* g_focus_group_shot ;
 extern lv_group_t* g_focus_group_browser_page ;
+extern lv_group_t* g_focus_group_letter_page ;
 

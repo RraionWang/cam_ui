@@ -13,13 +13,13 @@
 static void but1_cb(void *arg, void *usr_data)
 {
     ESP_LOGI("BUT","按键1") ; 
-    g_last_key = LV_KEY_PREV;
+    g_last_key = LV_KEY_NEXT;
     g_key_pressed = true;
 }
 
 static void but2_cb(void *arg, void *usr_data)
 {    ESP_LOGI("BUT","按键2") ; 
-    g_last_key = LV_KEY_NEXT;
+    g_last_key = LV_KEY_PREV;
     g_key_pressed = true;
 }
 
