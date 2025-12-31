@@ -26,12 +26,12 @@ void tick_task(void *pvParam)
 }
 
 void app_main(){
-  i2s_rx_init() ; 
+
 
    // 初始化4168的所有引脚
    init_ns4168_gpio_pin();
 
-  stop_record() ; 
+
 
     sdmmc_card_t* card = init_sdcard() ; 
 
@@ -49,14 +49,16 @@ void app_main(){
 
     xTaskCreate(tick_task, "tick_task", 8192, NULL, 4, NULL);
     
-     cam_init_and_start(objects.shot_window_obj);
+    cam_init_and_start(objects.shot_window_obj);
 
 
     set_wav_list_obj(objects.list_wav) ; 
 
-
+  i2s_rx_init() ; 
     // 开始创建录音任务
      xTaskCreate(record_task, "record_task", 8192, NULL, 5, NULL);
+     disable_speaker() ; 
+      audio_play_init() ; 
 
      
 

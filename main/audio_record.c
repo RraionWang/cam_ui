@@ -300,19 +300,19 @@ void record_task(void *arg)
 }
 
 
+void disable_speaker(){
+            gpio_set_level(NS_CTRL, 0);
 
+    }
 
-void stop_record(){
+void enable_speaker(){
 
-    gpio_set_level(NS_CTRL, 0);
-    is_record = false;
+    gpio_set_level(NS_CTRL, 1);
+   
 }
 
 
-void start_record(){
-            gpio_set_level(NS_CTRL, 1);
-    is_record = true;
-    }
+
 
 void set_wav_list_obj(lv_obj_t *list)
 {
@@ -325,52 +325,174 @@ void set_wav_list_obj(lv_obj_t *list)
 
 // ================= WAV 列表与播放 =================
 
+bool is_playing = false ; 
+
+
+// 播放相关变量
+static TaskHandle_t play_task_handle = NULL;
+static SemaphoreHandle_t play_sem = NULL;
+static char play_file_path[256] = {0};
+static bool play_requested = false;
+
+
+static void playback_task(void *arg)
+{
+    ESP_LOGI(TAG, "Playback task started");
+    
+    while (1) {
+        if (!play_requested) {
+            xSemaphoreTake(play_sem, portMAX_DELAY);
+        }
+        
+        if (!play_requested) continue;
+        
+        char current_file[256];
+        strncpy(current_file, play_file_path, sizeof(current_file));
+        play_requested = false;
+        
+        ESP_LOGI(TAG, "Playing: %s", current_file);
+        
+        // 保存当前录音状态
+        bool was_recording = is_record;
+        
+        // 如果正在录音，先停止
+        if (was_recording) {
+            is_record = false;
+            vTaskDelay(pdMS_TO_TICKS(200));
+        }
+        
+        // 启用扬声器
+        enable_speaker();
+        
+        // 确保I2S TX已初始化
+        i2s_tx_init();
+        
+        FILE *f = fopen(current_file, "rb");
+        if (!f) {
+            ESP_LOGE(TAG, "Open failed: %s", current_file);
+            disable_speaker();
+            is_playing = false;
+            if (was_recording) is_record = true;
+            
+            // 更新UI
+            lv_obj_invalidate(g_wav_list);
+            continue;
+        }
+        
+        is_playing = true;
+        
+        // 跳过WAV头
+        fseek(f, 44, SEEK_SET);
+        
+        const size_t CHUNK_SAMPLES = 512;
+        const size_t CHUNK_BYTES = CHUNK_SAMPLES * 3;
+        uint8_t pcm_buffer[CHUNK_BYTES];
+        int32_t i2s_buffer[CHUNK_SAMPLES];
+        
+        size_t bytes_read;
+        while (is_playing && (bytes_read = fread(pcm_buffer, 1, CHUNK_BYTES, f)) > 0) {
+            size_t samples_read = bytes_read / 3;
+            
+            // 24位PCM转I2S格式
+            for (size_t i = 0; i < samples_read; i++) {
+                uint8_t b0 = pcm_buffer[i * 3];
+                uint8_t b1 = pcm_buffer[i * 3 + 1];
+                uint8_t b2 = pcm_buffer[i * 3 + 2];
+                
+                int32_t sample = ((int32_t)b0) | 
+                                ((int32_t)b1 << 8) | 
+                                ((int32_t)b2 << 16);
+                
+                if (sample & 0x00800000) {
+                    sample |= 0xFF000000;
+                } else {
+                    sample &= 0x00FFFFFF;
+                }
+                
+                i2s_buffer[i] = sample << 8;
+            }
+            
+            // 发送到I2S
+            size_t bytes_to_write = samples_read * sizeof(int32_t);
+            size_t bytes_written = 0;
+            
+            esp_err_t ret = i2s_channel_write(tx_chan, i2s_buffer, bytes_to_write, 
+                                            &bytes_written, 0); // 不要用portMAX_DELAY
+            
+            if (ret != ESP_OK) {
+                ESP_LOGE(TAG, "I2S write error: %d", ret);
+                break;
+            }
+            
+            // 让出CPU，给UI和其他任务机会
+            vTaskDelay(pdMS_TO_TICKS(1));
+            
+            // 检查是否被停止
+            if (!is_playing) break;
+        }
+        
+        fclose(f);
+        
+        // 等待I2S缓冲区清空
+        vTaskDelay(pdMS_TO_TICKS(50));
+        
+        // 关闭扬声器
+        disable_speaker();
+        
+        ESP_LOGI(TAG, "Playback finished");
+        is_playing = false;
+        
+        // 恢复录音
+        if (was_recording) {
+            is_record = true;
+        }
+        
+        // 刷新列表
+        if (g_wav_list) {
+            lv_obj_invalidate(g_wav_list);
+        }
+    }
+}
 
 
 static void playback_wav_file(const char *path)
 {
-    i2s_tx_init();
-    FILE *f = fopen(path, "rb");
-    if (!f) {
-        ESP_LOGE(TAG, "open %s failed", path);
-        return;
+    if (is_playing) {
+        ESP_LOGI(TAG, "Stop current playback first");
+        stop_playback();
+        vTaskDelay(pdMS_TO_TICKS(100)); // 等待播放停止
     }
-
-    // 停止当前录音，避免读写冲突
-    is_record = false;
-
-    // 跳过 WAV 头
-    fseek(f, 44, SEEK_SET);
-
-    const size_t RAW_CHUNK = 1024;
-    uint8_t raw[RAW_CHUNK];
-    int32_t samples[RAW_CHUNK / 3 + 2];
-
-    size_t n;
-    while ((n = fread(raw, 1, sizeof(raw), f)) > 0) {
-        size_t sample_count = n / 3;
-        for (size_t i = 0; i < sample_count; i++) {
-            uint8_t b0 = raw[i * 3 + 0];
-            uint8_t b1 = raw[i * 3 + 1];
-            int8_t b2 = (int8_t)raw[i * 3 + 2]; // 符号位
-
-            int32_t s24 = (int32_t)((uint32_t)b0 | ((uint32_t)b1 << 8) | ((int32_t)b2 << 16));
-            samples[i] = s24 << 8; // 左移对齐到 32bit
-        }
-
-        size_t bytes_to_write = sample_count * sizeof(int32_t);
-        size_t bytes_written = 0;
-        esp_err_t ret = i2s_channel_write(tx_chan, samples, bytes_to_write, &bytes_written, pdMS_TO_TICKS(200));
-        if (ret != ESP_OK) {
-            ESP_LOGE(TAG, "i2s write err %d", ret);
-            break;
-        }
+    
+    // 发送播放请求
+    if (play_sem == NULL) {
+        play_sem = xSemaphoreCreateBinary();
     }
-
-    fclose(f);
-    ESP_LOGI(TAG, "Play done: %s", path);
-     fill_wav_list(objects.list_wav) ; 
+    
+    strncpy(play_file_path, path, sizeof(play_file_path) - 1);
+    play_file_path[sizeof(play_file_path) - 1] = '\0';
+    play_requested = true;
+    
+    if (play_task_handle == NULL) {
+        xTaskCreate(playback_task, "playback_task", 4096, NULL, 5, &play_task_handle);
+    } else {
+        xSemaphoreGive(play_sem); // 唤醒播放任务
+    }
 }
+
+
+void stop_playback(void)
+{
+    if (is_playing) {
+        ESP_LOGI(TAG, "Stopping playback...");
+        is_playing = false;
+        
+        // 等待播放任务结束
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
+
+
+
 
 static void wav_item_click_cb(lv_event_t * e)
 {
@@ -406,4 +528,18 @@ void fill_wav_list(lv_obj_t *list)
         lv_obj_add_event_cb(btn, wav_item_click_cb, LV_EVENT_CLICKED, NULL);
     }
     closedir(dir);
+}
+
+
+void audio_play_init(void)
+{
+
+    
+    // 初始化播放控制
+    play_sem = xSemaphoreCreateBinary();
+    play_requested = false;
+    is_playing = false;
+    
+    // 创建播放任务
+    xTaskCreate(playback_task, "playback_task", 8192, NULL, 5, &play_task_handle);
 }
