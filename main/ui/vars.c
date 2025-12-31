@@ -3,6 +3,7 @@
 #include "string.h"
 
 
+
 int32_t screen_id;
 
 int32_t get_var_screen_id() {
@@ -27,3 +28,15 @@ void set_var_shot_info(const char *value) {
     shot_info[sizeof(shot_info) / sizeof(char) - 1] = 0;
 }
 
+
+
+  bool is_record;
+
+bool get_var_is_record() {
+
+    return is_record;
+}
+
+void set_var_is_record(bool value) {
+    is_record = value;
+}

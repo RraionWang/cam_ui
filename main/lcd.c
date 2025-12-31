@@ -177,6 +177,8 @@ lv_group_t* g_focus_group_main ;
 lv_group_t* g_focus_group_shot ;
 lv_group_t* g_focus_group_browser_page ;
 lv_group_t* g_focus_group_letter_page ;
+lv_group_t* g_focus_group_record_page ; // 录音界面
+lv_group_t* g_focus_group_video_page ; // 视频界面
 
 #include "screens.h"
 
@@ -188,10 +190,16 @@ void init_all_focus_group(){
              g_focus_group_browser_page = lv_group_create();
              g_focus_group_letter_page = lv_group_create() ; 
 
+
+    g_focus_group_record_page  = lv_group_create() ; 
+ g_focus_group_video_page  = lv_group_create() ; 
+
     lv_group_set_wrap(g_focus_group_main, true);   // ⭐ 关键
     lv_group_add_obj(g_focus_group_main,objects.bt_browser_pics);
     lv_group_add_obj(g_focus_group_main,objects.bt_shot);
     lv_group_add_obj(g_focus_group_main,objects.bt_letter);
+    lv_group_add_obj(g_focus_group_main,objects.bt_record);
+    lv_group_add_obj(g_focus_group_main,objects.bt_video);
 
 
 
@@ -209,6 +217,19 @@ void init_all_focus_group(){
 
     lv_group_set_wrap(g_focus_group_letter_page, true);   // ⭐ 关键
     lv_group_add_obj(g_focus_group_letter_page,objects.bt_back_from_letter);
+
+
+    lv_group_set_wrap(g_focus_group_record_page,true) ;  // 设置录音界面可以聚焦
+    lv_group_add_obj(g_focus_group_record_page,objects.bt_back_from_record); // 添加退出按钮
+        lv_group_add_obj(g_focus_group_record_page,objects.bt_record_from_record_page); // 添加退出按钮
+    
+
+
+
+    lv_group_set_wrap(g_focus_group_video_page,true) ;  // 设置视频界面可以聚焦
+    lv_group_add_obj(g_focus_group_video_page,objects.bt_back_from_video); // 添加视频页面的退出按钮
+
+
 
 }
 

@@ -42,9 +42,10 @@ button_adc_config_t btn_adc_cfg = {
 };
 
 
+// 按键1  1650
 btn_adc_cfg.button_index = 0;
 btn_adc_cfg.min = 1450;
-btn_adc_cfg.max = 1800;
+btn_adc_cfg.max = 1950;
 iot_button_new_adc_device(&btn_cfg, &btn_adc_cfg, &adc_btn);
 if(NULL == adc_btn) {
     ESP_LOGE("BUT", "Button create failed");
@@ -52,10 +53,10 @@ if(NULL == adc_btn) {
 iot_button_register_cb(adc_btn, BUTTON_SINGLE_CLICK, NULL, but1_cb,NULL);
 
 
-
+// 按键2 2200
 btn_adc_cfg.button_index = 1;
-btn_adc_cfg.min = 800;
-btn_adc_cfg.max = 1400;
+btn_adc_cfg.min = 2000;
+btn_adc_cfg.max = 2400;
  iot_button_new_adc_device(&btn_cfg, &btn_adc_cfg, &adc_btn);
 if(NULL == adc_btn) {
     ESP_LOGE("BUT", "Button create failed");
@@ -63,10 +64,10 @@ if(NULL == adc_btn) {
 iot_button_register_cb(adc_btn, BUTTON_SINGLE_CLICK, NULL, but2_cb,NULL);
 
 
-
+// 按键3 2720
 btn_adc_cfg.button_index = 3;
-btn_adc_cfg.min = 2700;
-btn_adc_cfg.max = 3300;
+btn_adc_cfg.min = 2520;
+btn_adc_cfg.max = 2920;
 iot_button_new_adc_device(&btn_cfg, &btn_adc_cfg, &adc_btn);
 if(NULL == adc_btn) {
     ESP_LOGE("BUT", "Button create failed");

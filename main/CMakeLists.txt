@@ -1,4 +1,4 @@
-idf_component_register(SRCS "main.c" "lcd.c"  "my_fs.c" "key.c" "cam.c"
+idf_component_register(SRCS "main.c" "lcd.c"  "my_fs.c" "key.c" "cam.c" "audio_record.c"
 
                            "ui/ui_font_cn_font_16.c"
                            "ui/eez-flow.cpp"                    
