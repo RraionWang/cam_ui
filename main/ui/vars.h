@@ -26,7 +26,6 @@ extern const char *get_var_shot_info();
 extern void set_var_shot_info(const char *value);
 extern bool get_var_is_record();
 extern void set_var_is_record(bool value);
-extern   bool is_record; ; 
 
 
 #ifdef __cplusplus

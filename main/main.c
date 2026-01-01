@@ -9,7 +9,6 @@
 #include "screens.h"
 #include "esp_lvgl_port.h"
 #include "audio_record.h"
-
 #include "cam.h"
 
 void tick_task(void *pvParam)
@@ -27,12 +26,6 @@ void tick_task(void *pvParam)
 
 void app_main(){
 
-
-   // 初始化4168的所有引脚
-   init_ns4168_gpio_pin();
-
-
-
     sdmmc_card_t* card = init_sdcard() ; 
 
     ESP_ERROR_CHECK(app_lcd_init());
@@ -41,24 +34,30 @@ void app_main(){
     ui_init();
     init_but();
 
-    
+
+
     binding_key() ;
 
     fill_jpg_list(objects.file_list_obj) ; 
 
 
-    xTaskCreate(tick_task, "tick_task", 8192, NULL, 4, NULL);
+    xTaskCreate(tick_task, "tick_task", 8192, NULL, 5, NULL);
     
     cam_init_and_start(objects.shot_window_obj);
 
 
     set_wav_list_obj(objects.list_wav) ; 
+   
+       i2s_rx_init() ; 
+   
+    // // // 开始创建录音任务
+       xTaskCreate(record_task, "record_task", 8192, NULL, 4, NULL);
 
-  i2s_rx_init() ; 
-    // 开始创建录音任务
-     xTaskCreate(record_task, "record_task", 8192, NULL, 5, NULL);
+            // 确保I2S TX已初始化
+      i2s_tx_init();
+
      disable_speaker() ; 
-      audio_play_init() ; 
+    audio_play_init() ; 
 
      
 

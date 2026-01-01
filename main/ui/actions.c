@@ -4,6 +4,7 @@
 #include "screens.h"
 #include "vars.h"
 #include "lcd.h"
+#include "audio_record.h" 
 
 void action_prev_pic(lv_event_t *e)
 {
@@ -97,4 +98,38 @@ void action_refresh_sd(lv_event_t *e)
 {
   // TODO: Implement action refresh_sd here
   fill_jpg_list(objects.file_list_obj);
+}
+
+
+// 录音回调
+void action_record_func(lv_event_t *e) {
+  bool isrecord = get_var_is_record(); 
+
+
+  // 如果开始录音
+  if(isrecord){
+
+
+
+    
+
+  // 停止录音
+  }else{
+
+  }
+    // TODO: Implement action record_func here
+}
+
+void action_update_wav_list(lv_event_t *e) {
+    // TODO: Implement action update_wav_list here
+
+    audio_record_ui_poll() ;
+
+
+}
+
+
+// 播放文件
+void action_play_func(lv_event_t *e) {
+    // TODO: Implement action play_func here
 }
