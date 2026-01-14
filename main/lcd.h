@@ -25,5 +25,4 @@ extern lv_group_t* g_focus_group_main ;
 extern lv_group_t* g_focus_group_shot ;
 extern lv_group_t* g_focus_group_browser_page ;
 extern lv_group_t* g_focus_group_letter_page ;
-extern lv_group_t* g_focus_group_record_page ; // 录音界面
-extern lv_group_t* g_focus_group_video_page ; // 视频界面
+

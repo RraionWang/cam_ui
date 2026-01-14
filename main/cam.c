@@ -21,6 +21,7 @@
 #include "button_gpio.h"
 #include "screens.h"
 #include "vars.h"
+#include "ws2812.h"
 
 
 
@@ -82,6 +83,8 @@ static void save_to_sd(camera_fb_t *fb) {
     snprintf(filename, sizeof(filename), "/sdcard/IMG_%s.jpg", ts);
 
     set_var_shot_info("拍照中");
+    
+
 
 
     
@@ -177,8 +180,11 @@ void cam_render_task(void *pvParam) {
 
         // --- 拍照逻辑 ---
         if (g_take_photo) {
+       
+
             save_to_sd(fb);
             g_take_photo = false;
+           
         }
 
         // --- 解码并推送到 UI ---

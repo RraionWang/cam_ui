@@ -40,3 +40,15 @@ bool get_var_is_record() {
 void set_var_is_record(bool value) {
     is_record = value;
 }
+
+
+char sd_detect_info[100] = { 0 };
+
+const char *get_var_sd_detect_info() {
+    return sd_detect_info;
+}
+
+void set_var_sd_detect_info(const char *value) {
+    strncpy(sd_detect_info, value, sizeof(sd_detect_info) / sizeof(char));
+    sd_detect_info[sizeof(sd_detect_info) / sizeof(char) - 1] = 0;
+}

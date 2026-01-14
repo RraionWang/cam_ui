@@ -184,34 +184,34 @@ sdmmc_card_t*  init_sdcard(void)
 
     // Use POSIX and C standard library functions to work with files:
 
-    // First create a file.
-    const char *file_hello = MOUNT_POINT"/hello.txt";
-    char data[EXAMPLE_MAX_CHAR_SIZE];
-    snprintf(data, EXAMPLE_MAX_CHAR_SIZE, "%s %s!\n", "Hello", card->cid.name);
-    ret = s_example_write_file(file_hello, data);
-    if (ret != ESP_OK) {
-        return NULL;
-    }
+    // // First create a file.
+    // const char *file_hello = MOUNT_POINT"/hello.txt";
+    // char data[EXAMPLE_MAX_CHAR_SIZE];
+    // snprintf(data, EXAMPLE_MAX_CHAR_SIZE, "%s %s!\n", "Hello", card->cid.name);
+    // ret = s_example_write_file(file_hello, data);
+    // if (ret != ESP_OK) {
+    //     return NULL;
+    // }
 
-    const char *file_foo = MOUNT_POINT"/foo.txt";
-    // Check if destination file exists before renaming
-    struct stat st;
-    if (stat(file_foo, &st) == 0) {
-        // Delete it if it exists
-        unlink(file_foo);
-    }
+    // const char *file_foo = MOUNT_POINT"/foo.txt";
+    // // Check if destination file exists before renaming
+    // struct stat st;
+    // if (stat(file_foo, &st) == 0) {
+    //     // Delete it if it exists
+    //     unlink(file_foo);
+    // }
 
     // Rename original file
-    ESP_LOGI(TAG, "Renaming file %s to %s", file_hello, file_foo);
-    if (rename(file_hello, file_foo) != 0) {
-        ESP_LOGE(TAG, "Rename failed");
-        return NULL;
-    }
+    // ESP_LOGI(TAG, "Renaming file %s to %s", file_hello, file_foo);
+    // if (rename(file_hello, file_foo) != 0) {
+    //     ESP_LOGE(TAG, "Rename failed");
+    //     return NULL;
+    // }
 
-    ret = s_example_read_file(file_foo);
-    if (ret != ESP_OK) {
-        return NULL;
-    }
+    // ret = s_example_read_file(file_foo);
+    // if (ret != ESP_OK) {
+    //     return NULL;
+    // }
 
     // Format FATFS
 
@@ -229,19 +229,19 @@ sdmmc_card_t*  init_sdcard(void)
     // }
 
 
-    const char *file_nihao = MOUNT_POINT"/nihao.txt";
-    memset(data, 0, EXAMPLE_MAX_CHAR_SIZE);
-    snprintf(data, EXAMPLE_MAX_CHAR_SIZE, "%s %s!\n", "Nihao", card->cid.name);
-    ret = s_example_write_file(file_nihao, data);
-    if (ret != ESP_OK) {
-        return NULL;
-    }
+    // const char *file_nihao = MOUNT_POINT"/nihao.txt";
+    // memset(data, 0, EXAMPLE_MAX_CHAR_SIZE);
+    // snprintf(data, EXAMPLE_MAX_CHAR_SIZE, "%s %s!\n", "Nihao", card->cid.name);
+    // ret = s_example_write_file(file_nihao, data);
+    // if (ret != ESP_OK) {
+    //     return NULL;
+    // }
 
-    //Open file for reading
-    ret = s_example_read_file(file_nihao);
-    if (ret != ESP_OK) {
-        return NULL;
-    }
+    // //Open file for reading
+    // ret = s_example_read_file(file_nihao);
+    // if (ret != ESP_OK) {
+    //     return NULL;
+    // }
 
     return card ; 
     // // All done, unmount partition and disable SDMMC peripheral

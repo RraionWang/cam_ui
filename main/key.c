@@ -66,8 +66,8 @@ iot_button_register_cb(adc_btn, BUTTON_SINGLE_CLICK, NULL, but2_cb,NULL);
 
 // 按键3 2720
 btn_adc_cfg.button_index = 3;
-btn_adc_cfg.min = 2520;
-btn_adc_cfg.max = 2920;
+btn_adc_cfg.min = 2420;
+btn_adc_cfg.max = 3320;
 iot_button_new_adc_device(&btn_cfg, &btn_adc_cfg, &adc_btn);
 if(NULL == adc_btn) {
     ESP_LOGE("BUT", "Button create failed");

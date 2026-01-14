@@ -4,7 +4,7 @@
 #include "screens.h"
 #include "vars.h"
 #include "lcd.h"
-#include "audio_record.h" 
+
 
 void action_prev_pic(lv_event_t *e)
 {
@@ -67,22 +67,6 @@ void action_set_focus_group(lv_event_t *e)
 
     break;
 
-  case 4:
-
-    lv_indev_set_group(indev, g_focus_group_record_page);
-    g_camera_streaming = false;
-    ESP_LOGI("TAG", "切换焦点组为录音界面");
-    g_camera_streaming = false;
-
-    break;
-
-  case 5:
-
-    lv_indev_set_group(indev, g_focus_group_video_page);
-    g_camera_streaming = false;
-    ESP_LOGI("TAG", "切换焦点组为摄像机页面");
-
-    break;
 
   default:
     ESP_LOGI("TAG", "切换焦点组为main页面");
@@ -101,32 +85,7 @@ void action_refresh_sd(lv_event_t *e)
 }
 
 
-// 录音回调
-void action_record_func(lv_event_t *e) {
-  bool isrecord = get_var_is_record(); 
 
-
-  // 如果开始录音
-  if(isrecord){
-
-
-
-    
-
-  // 停止录音
-  }else{
-
-  }
-    // TODO: Implement action record_func here
-}
-
-void action_update_wav_list(lv_event_t *e) {
-    // TODO: Implement action update_wav_list here
-
-    audio_record_ui_poll() ;
-
-
-}
 
 
 // 播放文件
