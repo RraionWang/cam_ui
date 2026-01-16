@@ -125,8 +125,8 @@ void create_screen_main() {
             // bt_browser_pics
             lv_obj_t *obj = lv_button_create(parent_obj);
             objects.bt_browser_pics = obj;
-            lv_obj_set_pos(obj, 10, 17);
-            lv_obj_set_size(obj, 82, 138);
+            lv_obj_set_pos(obj, 10, 44);
+            lv_obj_set_size(obj, 82, 111);
             lv_obj_add_event_cb(obj, event_handler_cb_main_bt_browser_pics, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
@@ -145,8 +145,8 @@ void create_screen_main() {
             // bt_shot
             lv_obj_t *obj = lv_button_create(parent_obj);
             objects.bt_shot = obj;
-            lv_obj_set_pos(obj, 110, 17);
-            lv_obj_set_size(obj, 94, 138);
+            lv_obj_set_pos(obj, 110, 44);
+            lv_obj_set_size(obj, 94, 111);
             lv_obj_add_event_cb(obj, event_handler_cb_main_bt_shot, LV_EVENT_ALL, flowState);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xff54ac6d), LV_PART_MAIN | LV_STATE_DEFAULT);
             {
@@ -165,8 +165,8 @@ void create_screen_main() {
             // bt_letter
             lv_obj_t *obj = lv_button_create(parent_obj);
             objects.bt_letter = obj;
-            lv_obj_set_pos(obj, 220, 17);
-            lv_obj_set_size(obj, 88, 138);
+            lv_obj_set_pos(obj, 220, 44);
+            lv_obj_set_size(obj, 88, 111);
             lv_obj_add_event_cb(obj, event_handler_cb_main_bt_letter, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
@@ -183,7 +183,7 @@ void create_screen_main() {
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.obj0 = obj;
-            lv_obj_set_pos(obj, 100, 0);
+            lv_obj_set_pos(obj, 10, 9);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &ui_font_cn_font_16, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -215,13 +215,14 @@ void create_screen_shot() {
     objects.shot = obj;
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 320, 172);
+    lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
     {
         lv_obj_t *parent_obj = obj;
         {
             // shot_window_obj
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.shot_window_obj = obj;
-            lv_obj_set_pos(obj, 30, 20);
+            lv_obj_set_pos(obj, 10, 22);
             lv_obj_set_size(obj, 260, 148);
             lv_obj_clear_flag(obj, LV_OBJ_FLAG_CLICKABLE|LV_OBJ_FLAG_SCROLLABLE);
         }
@@ -229,8 +230,8 @@ void create_screen_shot() {
             // bt_back_from_shot
             lv_obj_t *obj = lv_button_create(parent_obj);
             objects.bt_back_from_shot = obj;
-            lv_obj_set_pos(obj, 302, 0);
-            lv_obj_set_size(obj, 18, 15);
+            lv_obj_set_pos(obj, 279, 22);
+            lv_obj_set_size(obj, 35, 35);
             lv_obj_add_event_cb(obj, event_handler_cb_shot_bt_back_from_shot, LV_EVENT_ALL, flowState);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xffeb3a3a), LV_PART_MAIN | LV_STATE_DEFAULT);
             {
@@ -247,17 +248,17 @@ void create_screen_shot() {
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.obj1 = obj;
-            lv_obj_set_pos(obj, 0, 0);
+            lv_obj_set_pos(obj, 10, 4);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_obj_set_style_text_font(obj, &ui_font_cn_font_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
         }
         {
             // pre_pocker_btn
             lv_obj_t *obj = lv_button_create(parent_obj);
             objects.pre_pocker_btn = obj;
-            lv_obj_set_pos(obj, 296, 44);
-            lv_obj_set_size(obj, 24, 26);
+            lv_obj_set_pos(obj, 279, 79);
+            lv_obj_set_size(obj, 35, 35);
             lv_obj_add_event_cb(obj, event_handler_cb_shot_pre_pocker_btn, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
@@ -275,8 +276,8 @@ void create_screen_shot() {
             // next_pocker_btn
             lv_obj_t *obj = lv_button_create(parent_obj);
             objects.next_pocker_btn = obj;
-            lv_obj_set_pos(obj, 296, 87);
-            lv_obj_set_size(obj, 24, 26);
+            lv_obj_set_pos(obj, 279, 125);
+            lv_obj_set_size(obj, 35, 35);
             lv_obj_add_event_cb(obj, event_handler_cb_shot_next_pocker_btn, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
@@ -293,7 +294,24 @@ void create_screen_shot() {
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.obj4 = obj;
-            lv_obj_set_pos(obj, 178, 2);
+            lv_obj_set_pos(obj, 208, 2);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(obj, &ui_font_cn_font_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text(obj, "");
+        }
+        {
+            // status_led
+            lv_obj_t *obj = lv_led_create(parent_obj);
+            objects.status_led = obj;
+            lv_obj_set_pos(obj, 304, 7);
+            lv_obj_set_size(obj, 10, 10);
+            lv_led_set_color(obj, lv_color_hex(0xff6f9a35));
+            lv_led_set_brightness(obj, 250);
+            lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 287, 45);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &ui_font_cn_font_16, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "");
@@ -462,7 +480,7 @@ void tick_screen_letter_page() {
 
 
 static const char *screen_names[] = { "Main", "shot", "browser_page", "letter_page" };
-static const char *object_names[] = { "main", "shot", "browser_page", "letter_page", "bt_browser_pics", "bt_shot", "bt_letter", "bt_back_from_shot", "pre_pocker_btn", "next_pocker_btn", "bt_back_from_browser", "file_list_obj", "bt_back_from_letter", "obj0", "shot_window_obj", "obj1", "obj2", "obj3", "obj4", "pic_window_obj", "letter_text_obj" };
+static const char *object_names[] = { "main", "shot", "browser_page", "letter_page", "bt_browser_pics", "bt_shot", "bt_letter", "bt_back_from_shot", "pre_pocker_btn", "next_pocker_btn", "bt_back_from_browser", "file_list_obj", "bt_back_from_letter", "obj0", "shot_window_obj", "status_led", "obj1", "obj2", "obj3", "obj4", "pic_window_obj", "letter_text_obj" };
 
 
 typedef void (*tick_screen_func_t)();

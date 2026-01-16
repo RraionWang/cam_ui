@@ -23,6 +23,7 @@ typedef struct _objects_t {
     lv_obj_t *bt_back_from_letter;
     lv_obj_t *obj0;
     lv_obj_t *shot_window_obj;
+    lv_obj_t *status_led;
     lv_obj_t *obj1;
     lv_obj_t *obj2;
     lv_obj_t *obj3;
