@@ -52,3 +52,28 @@ void set_var_sd_detect_info(const char *value) {
     strncpy(sd_detect_info, value, sizeof(sd_detect_info) / sizeof(char));
     sd_detect_info[sizeof(sd_detect_info) / sizeof(char) - 1] = 0;
 }
+
+
+
+int32_t filter_id;
+
+int32_t get_var_filter_id() {
+    return filter_id;
+}
+
+void set_var_filter_id(int32_t value) {
+    filter_id = value;
+}
+
+
+
+char pocker_name[100] = { 0 };
+
+const char *get_var_pocker_name() {
+    return pocker_name;
+}
+
+void set_var_pocker_name(const char *value) {
+    strncpy(pocker_name, value, sizeof(pocker_name) / sizeof(char));
+    pocker_name[sizeof(pocker_name) / sizeof(char) - 1] = 0;
+}

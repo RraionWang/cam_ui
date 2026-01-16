@@ -26,6 +26,10 @@ extern const char *get_var_shot_info();
 extern void set_var_shot_info(const char *value);
 extern const char *get_var_sd_detect_info();
 extern void set_var_sd_detect_info(const char *value);
+extern int32_t get_var_filter_id();
+extern void set_var_filter_id(int32_t value);
+extern const char *get_var_pocker_name();
+extern void set_var_pocker_name(const char *value);
 
 
 #ifdef __cplusplus

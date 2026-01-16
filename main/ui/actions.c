@@ -92,3 +92,38 @@ void action_refresh_sd(lv_event_t *e)
 void action_play_func(lv_event_t *e) {
     // TODO: Implement action play_func here
 }
+
+#include "poker.h"
+
+void action_pre_poker(lv_event_t *e) {
+    ESP_LOGI("POCKER","上一个滤镜");
+
+    int id = get_var_filter_id();
+
+    id--;
+    if (id < 0) {
+        id = POKER_FILTER_MAX - 1;   // 循环到最后一个
+    }
+
+    set_var_filter_id(id);
+
+    ESP_LOGI("POCKER","当前滤镜 ID = %d", id);
+    set_var_pocker_name(poker_filter_name(id)) ; 
+}
+
+
+void action_next_poker(lv_event_t *e) {
+    ESP_LOGI("POCKER","下一个滤镜");
+
+    int id = get_var_filter_id();
+
+    id++;
+    if (id >= POKER_FILTER_MAX) {
+        id = 0;   // 回到第一个
+    }
+
+    set_var_filter_id(id);
+
+    ESP_LOGI("POCKER","当前滤镜 ID = %d", id);
+        set_var_pocker_name(poker_filter_name(id)) ; 
+}

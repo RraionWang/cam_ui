@@ -31,14 +31,6 @@ void tick_task(void *pvParam)
 
 void app_main(){
 
-
-
- 
-
-  
-
-
-
     sdmmc_card_t* card = init_sdcard() ; 
 
     if(!card){
@@ -51,14 +43,12 @@ void app_main(){
     ui_init();
     init_but();
 
-
-
     binding_key() ;
 
     fill_jpg_list(objects.file_list_obj) ; 
 
-
-    xTaskCreate(tick_task, "tick_task", 8192, NULL, 5, NULL);
+      
+    xTaskCreatePinnedToCore(tick_task, "tick_task", 8192*2, NULL, 5, NULL,0);
    
     
     cam_init_and_start(objects.shot_window_obj);

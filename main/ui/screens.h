@@ -16,12 +16,17 @@ typedef struct _objects_t {
     lv_obj_t *bt_shot;
     lv_obj_t *bt_letter;
     lv_obj_t *bt_back_from_shot;
+    lv_obj_t *pre_pocker_btn;
+    lv_obj_t *next_pocker_btn;
     lv_obj_t *bt_back_from_browser;
     lv_obj_t *file_list_obj;
     lv_obj_t *bt_back_from_letter;
     lv_obj_t *obj0;
     lv_obj_t *shot_window_obj;
     lv_obj_t *obj1;
+    lv_obj_t *obj2;
+    lv_obj_t *obj3;
+    lv_obj_t *obj4;
     lv_obj_t *pic_window_obj;
     lv_obj_t *letter_text_obj;
 } objects_t;
