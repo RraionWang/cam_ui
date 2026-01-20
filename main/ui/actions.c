@@ -127,3 +127,5 @@ void action_next_poker(lv_event_t *e) {
     ESP_LOGI("POCKER","当前滤镜 ID = %d", id);
         set_var_pocker_name(poker_filter_name(id)) ; 
 }
+
+

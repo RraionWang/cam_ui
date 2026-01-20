@@ -235,6 +235,46 @@ static void filter_mono_color(uint16_t *buf, int w, int h, uint8_t r, uint8_t g,
     }
 }
 
+
+
+/* 灰度黑白照片 */
+static void filter_grayscale(uint16_t *buf, int w, int h)
+{
+    for (int i = 0; i < w * h; i++)
+    {
+        uint16_t c = buf[i];
+
+        // 人眼权重（非常经典）
+        int gray =
+            (r5(c) * 299 +
+             g6(c) * 587 +
+             b5(c) * 114) / 1000;
+
+        if (gray > 31) gray = 31;
+
+        buf[i] = rgb565(gray, gray << 1, gray);
+    }
+}
+
+
+/* 高对比黑白 */
+static void filter_bw_threshold(uint16_t *buf, int w, int h)
+{
+    for (int i = 0; i < w * h; i++)
+    {
+        uint16_t c = buf[i];
+        int gray = (r5(c) * 2 + g6(c) * 3 + b5(c) * 2) / 7;
+
+        if (gray > 16)
+            buf[i] = rgb565(31, 63, 31); // 白
+        else
+            buf[i] = 0;                 // 黑
+    }
+}
+
+
+
+
 /* ========= 调度入口 ========= */
 void poker_apply_filter(uint16_t *buf, int w, int h, poker_filter_t id)
 {
@@ -280,13 +320,40 @@ void poker_apply_filter(uint16_t *buf, int w, int h, poker_filter_t id)
     case POKER_FILTER_MONO_BLUE:
         filter_mono_color(buf, w, h, 0, 0, 31);
         break;
-    case POKER_FILTER_MONO_BLACK:
-        memset(buf, 0, w * h * 2);
-        break;
-    case POKER_FILTER_MONO_WHITE:
-        for (int i = 0; i < w * h; i++)
-            buf[i] = rgb565(31, 63, 31);
-        break;
+
+
+        case POKER_FILTER_MONO_CYAN:
+    filter_mono_color(buf, w, h, 0, 63, 31);
+    break;
+
+case POKER_FILTER_MONO_MAGENTA:
+    filter_mono_color(buf, w, h, 31, 0, 31);
+    break;
+
+case POKER_FILTER_MONO_GREEN:
+    filter_mono_color(buf, w, h, 0, 63, 0);
+    break;
+
+case POKER_FILTER_MONO_ORANGE:
+    filter_mono_color(buf, w, h, 31, 40, 0);
+    break;
+
+case POKER_FILTER_MONO_PURPLE:
+    filter_mono_color(buf, w, h, 20, 0, 20);
+    break;
+
+
+
+case POKER_FILTER_GRAYSCALE:
+    filter_grayscale(buf, w, h);
+    break;
+
+case POKER_FILTER_BW:
+    filter_bw_threshold(buf, w, h);
+    break;
+
+
+ 
 
     case POKER_FILTER_NONE:
     default:
@@ -327,11 +394,35 @@ const char *poker_filter_name(int id)
         return "单色黄";
     case POKER_FILTER_MONO_BLUE:
         return "单色蓝";
-    case POKER_FILTER_MONO_BLACK:
-        return "纯黑";
-    case POKER_FILTER_MONO_WHITE:
-        return "纯白";
+        case POKER_FILTER_MONO_CYAN:
+    return "单色青";
+
+case POKER_FILTER_MONO_MAGENTA:
+    return "单色品红";
+
+case POKER_FILTER_MONO_GREEN:
+    return "单色绿";
+
+case POKER_FILTER_MONO_ORANGE:
+    return "单色橙";
+
+case POKER_FILTER_MONO_PURPLE:
+    return "单色紫";
+
+
+
+
+        
+    case POKER_FILTER_GRAYSCALE:
+    return "灰度黑白";
+
+    case POKER_FILTER_BW:
+    return "高对比黑白";
+
+
     default:
         return "未知滤镜";
     }
 }
+
+

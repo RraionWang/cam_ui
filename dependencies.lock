@@ -77,6 +77,25 @@ dependencies:
     - esp32c5
     - esp32c6
     version: 0.5.1
+  espressif/esp_tinyusb:
+    component_hash: 6f1f0c140990bf27a86611e3c1f47f9fa8468bffc3bf1eb6d551cb09f31f8908
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    - name: espressif/tinyusb
+      registry_url: https://components.espressif.com
+      require: public
+      version: '>=0.17.0~2'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    targets:
+    - esp32s2
+    - esp32s3
+    - esp32p4
+    - esp32h4
+    version: 2.0.1~1
   espressif/led_strip:
     component_hash: f0d1b7f93eb3ee57bcfd220656176b0b5616e1947f89ed44364555cf910c4840
     dependencies:
@@ -87,6 +106,21 @@ dependencies:
       registry_url: https://components.espressif.com/
       type: service
     version: 3.0.2
+  espressif/tinyusb:
+    component_hash: 5ea9d3b6d6b0734a0a0b3491967aa0e1bece2974132294dbda5dd2839b247bfa
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    targets:
+    - esp32s2
+    - esp32s3
+    - esp32p4
+    - esp32h4
+    version: 0.19.0~2
   idf:
     source:
       type: idf
@@ -103,8 +137,9 @@ direct_dependencies:
 - espressif/esp32-camera
 - espressif/esp_lvgl_port
 - espressif/esp_new_jpeg
+- espressif/esp_tinyusb
 - espressif/led_strip
 - lvgl/lvgl
-manifest_hash: 78fb86dd7607f5a95745eb0d1177689690b1af4cf12f0d9fc76d711747172df4
+manifest_hash: d1d778b87d1f487670e0baf98ac1ff9e8052443e122944cbaa6c78a1e6f62a3c
 target: esp32s3
 version: 2.0.0

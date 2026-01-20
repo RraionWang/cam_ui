@@ -61,12 +61,20 @@ static void print_mem_task(void *arg)
 }
 
 
+
+
+
+
+
 void app_main(){
 
    xTaskCreate(print_mem_task, "printmeme", 4096, NULL, 5, NULL);
 
 
     sdmmc_card_t* card = init_sdcard() ; 
+
+       
+
 
     if(!card){
       set_var_sd_detect_info("检查SD卡!");
@@ -75,7 +83,7 @@ void app_main(){
     ESP_ERROR_CHECK(app_lcd_init());
     ESP_ERROR_CHECK(app_lvgl_init());
 
-        start_jpeg_filter_task();
+    start_jpeg_filter_task();
   
     ui_init();
     init_but();
@@ -89,8 +97,6 @@ void app_main(){
    
     
     cam_init_and_start(objects.shot_window_obj);
-
-
 
 }
 

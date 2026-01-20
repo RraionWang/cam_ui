@@ -14,6 +14,8 @@
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
+#include "tinyusb_default_config.h"
+
 // #include "sd_test_io.h"
 #if SOC_SDMMC_IO_POWER_EXTERNAL
 #include "sd_pwr_ctrl_by_on_chip_ldo.h"
@@ -70,6 +72,8 @@ static esp_err_t s_example_read_file(const char *path)
 
     return ESP_OK;
 }
+
+ sdmmc_card_t *card;
 
 sdmmc_card_t*  init_sdcard(void)
 {
@@ -466,3 +470,11 @@ void fill_jpg_list(lv_obj_t *list)
     }
     closedir(dir);
 }
+
+
+
+
+
+// 
+
+

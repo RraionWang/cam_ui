@@ -78,7 +78,7 @@ static void save_to_sd(camera_fb_t *fb)
     char ts[16], filename[64] ,poker_filename[64];
     get_uptime_hhmmss(ts, sizeof(ts));
     snprintf(filename, sizeof(filename), "/sdcard/IMG_%s.jpg", ts);
-     snprintf(poker_filename, sizeof(poker_filename), "/sdcard/POK_IMG_%s.jpg", ts);
+     snprintf(poker_filename, sizeof(poker_filename), "/sdcard/IMG_%s_POK%d.jpg", ts,(int)get_var_filter_id());
 
     set_var_shot_info("拍照中");
 
@@ -133,7 +133,7 @@ void cam_render_task(void *pvParam)
     {
         cam_img_obj = lv_image_create(parent);
         lv_obj_center(cam_img_obj);
-        lv_image_set_rotation(cam_img_obj, 900); // 900 = 90°
+        lv_image_set_rotation(cam_img_obj, -900); // 900 = 90°
 
         lv_obj_add_flag(cam_img_obj, LV_OBJ_FLAG_HIDDEN);
         lvgl_port_unlock();

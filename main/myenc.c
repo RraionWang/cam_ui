@@ -154,6 +154,7 @@ static esp_err_t process_jpeg_with_filter(
         .quality = 80,
         .width = w,
         .height = h,
+        
     };
 
     if (jpeg_enc_open(&enc_cfg, &enc) != JPEG_ERR_OK) {
