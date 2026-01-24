@@ -1,6 +1,6 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[camui.eez-project]:/userPages/0",
+    "selectedUserPageObject": "[camui.eez-project]:/userPages/3",
     "selectedGlobalVariableObject": "[camui.eez-project]:/variables/globalVariables/4",
     "selectedFontObject": "[camui.eez-project]:/fonts/0",
     "subnavigationSelectedItems": {
@@ -134,7 +134,6 @@
                   "type": "tabset",
                   "id": "#5a6111ff-0364-4774-98ea-d85559da17d6",
                   "weight": 1,
-                  "selected": 2,
                   "enableClose": false,
                   "children": [
                     {
@@ -201,6 +200,7 @@
               "type": "tabset",
               "id": "EDITORS",
               "weight": 40.977810519169026,
+              "selected": 2,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
@@ -230,10 +230,10 @@
                 {
                   "type": "tab",
                   "id": "#5d92e4bc-7dc4-418c-a71c-ccd05c0851c2",
-                  "name": "Main",
+                  "name": "letter_page",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[camui.eez-project]:/userPages/0",
+                    "objectPath": "[camui.eez-project]:/userPages/3",
                     "permanent": false
                   },
                   "icon": "svg:page"
@@ -1329,7 +1329,9 @@
       "selection": {
         "0": {
           "2": {
-            "$selected": true
+            "0": {
+              "$selected": true
+            }
           }
         }
       },
@@ -1350,17 +1352,18 @@
     "[camui.eez-project]:/userPages/3[flow-state]": {
       "selection": {
         "0": {
-          "0": {
+          "0": {},
+          "1": {
             "$selected": true
           }
         }
       },
       "transform": {
         "translate": {
-          "x": -160,
-          "y": -86
+          "x": -479,
+          "y": -145
         },
-        "scale": 2
+        "scale": 1.25
       },
       "timeline": {
         "isEditorActive": false,
@@ -1376,7 +1379,7 @@
           "x": -160,
           "y": -86
         },
-        "scale": 2
+        "scale": 1.25
       },
       "timeline": {
         "isEditorActive": false,

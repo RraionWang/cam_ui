@@ -98,6 +98,7 @@ void app_main(){
     
     cam_init_and_start(objects.shot_window_obj);
 
+    
 }
 
 

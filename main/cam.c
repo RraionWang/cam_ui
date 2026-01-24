@@ -24,6 +24,14 @@
 #include "poker.h"
 #include "myenc.h"
 
+#include <dirent.h>
+
+#include <sys/stat.h>
+
+#define IMAGE_EXT       ".jpg"
+
+
+
 static const char *TAG = "CAM_CTRL";
 
 // --- 全局变量与状态控制 ---
@@ -72,13 +80,50 @@ static void get_uptime_hhmmss(char *out, size_t len)
     snprintf(out, len, "%02d%02d%02d", (int)(sec / 3600) % 24, (int)(sec / 60) % 60, (int)sec % 60);
 }
 
+
+
+
+// 
+
+
+/* 判断文件是否存在 */
+static bool file_exists(const char *path)
+{
+    struct stat st;
+    return (stat(path, &st) == 0);
+}
+
+/* 生成 000000.jpg ~ 999999.jpg 中第一个可用名 */
+bool generate_next_image_name_fast(const char *dir_path,
+                                   char *out_name,
+                                   size_t out_len)
+{
+    if (out_len < 13) return false;
+
+    char fullpath[128];
+
+    for (int i = 0; i <= 999999; i++) {
+        snprintf(out_name, out_len, "%06d%s", i, IMAGE_EXT);
+        snprintf(fullpath, sizeof(fullpath), "%s/%s", dir_path, out_name);
+
+        if (!file_exists(fullpath)) {
+            return true;  // 找到空位
+        }
+    }
+
+    return false; // 全满
+}
+
+
 // --- 保存照片到 SD 卡 ---
 static void save_to_sd(camera_fb_t *fb)
 {
     char ts[16], filename[64] ,poker_filename[64];
-    get_uptime_hhmmss(ts, sizeof(ts));
-    snprintf(filename, sizeof(filename), "/sdcard/IMG_%s.jpg", ts);
-     snprintf(poker_filename, sizeof(poker_filename), "/sdcard/IMG_%s_POK%d.jpg", ts,(int)get_var_filter_id());
+    // get_uptime_hhmmss(ts, sizeof(ts)); // 删除时间戳命名，使用新的命名方式
+    generate_next_image_name_fast("/sdcard", ts, sizeof(ts)); //新的命名方式
+
+    snprintf(filename, sizeof(filename), "/sdcard/%s", ts);
+     snprintf(poker_filename, sizeof(poker_filename), "/sdcard/POK%d_%s", (int)get_var_filter_id(),ts);
 
     set_var_shot_info("拍照中");
 

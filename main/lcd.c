@@ -195,7 +195,7 @@ void init_all_focus_group(){
     lv_group_set_wrap(g_focus_group_main, true);   // ⭐ 关键
     lv_group_add_obj(g_focus_group_main,objects.bt_browser_pics);
     lv_group_add_obj(g_focus_group_main,objects.bt_shot);
-    lv_group_add_obj(g_focus_group_main,objects.bt_letter);
+    lv_group_add_obj(g_focus_group_main,objects.bt_letter); 
  
     
     
