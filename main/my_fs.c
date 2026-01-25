@@ -123,7 +123,7 @@ sdmmc_card_t*  init_sdcard(void)
     host.max_freq_khz = SDMMC_FREQ_DDR50;
 #endif
 
-host.max_freq_khz =SDMMC_FREQ_HIGHSPEED ; 
+host.max_freq_khz =SDMMC_FREQ_DEFAULT ; 
 
     // For SoCs where the SD power can be supplied both via an internal or external (e.g. on-board LDO) power supply.
     // When using specific IO pins (which can be used for ultra high-speed SDMMC) to connect to the SD card

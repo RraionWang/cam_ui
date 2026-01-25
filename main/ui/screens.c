@@ -445,6 +445,7 @@ void create_screen_letter_page() {
             lv_obj_set_pos(obj, 0, 11);
             lv_obj_set_size(obj, 298, 156);
             lv_textarea_set_max_length(obj, 128);
+            lv_textarea_set_text(obj, "没有特别对自己想说的，过好每一天，十年后你就 39 岁了，你有实现自己的梦想吗？去到想去的地方吗？");
             lv_textarea_set_one_line(obj, false);
             lv_textarea_set_password_mode(obj, false);
             lv_obj_set_style_text_font(obj, &ui_font_cn_font_16, LV_PART_MAIN | LV_STATE_DEFAULT);

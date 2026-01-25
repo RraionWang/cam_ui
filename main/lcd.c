@@ -6,6 +6,7 @@
 #include "esp_log.h"
 #include "esp_check.h"
 #include "driver/gpio.h"
+#include "driver/ledc.h"
 
 #include "driver/spi_master.h"
 #include "esp_lcd_panel_io.h"
@@ -37,6 +38,7 @@
 
 
 
+
 volatile uint32_t g_last_key = 0;
 volatile bool g_key_pressed = false;
 
@@ -48,6 +50,43 @@ static const char *TAG = "LCD";
 static esp_lcd_panel_io_handle_t lcd_io = NULL;
 static esp_lcd_panel_handle_t lcd_panel = NULL;
 static lv_display_t *lvgl_disp = NULL;
+
+
+#include "driver/ledc.h"
+
+#define LEDC_TIMER              LEDC_TIMER_0
+#define LEDC_MODE               LEDC_LOW_SPEED_MODE
+#define LEDC_CHANNEL            LEDC_CHANNEL_0
+#define LEDC_DUTY_RES           LEDC_TIMER_13_BIT // Set duty resolution to 13 bits
+#define LEDC_DUTY               (4096) // Set duty to 50%. (2 ** 13) * 50% = 4096
+#define LEDC_FREQUENCY          (4000) // Frequency in Hertz. Set frequency at 4 kHz
+
+static void ledc_init(void)
+{
+    // Prepare and then apply the LEDC PWM timer configuration
+    ledc_timer_config_t ledc_timer = {
+        .speed_mode       = LEDC_MODE,
+        .duty_resolution  = LEDC_DUTY_RES,
+        .timer_num        = LEDC_TIMER,
+        .freq_hz          = LEDC_FREQUENCY,  // Set output frequency at 4 kHz
+        .clk_cfg          = LEDC_AUTO_CLK
+    };
+    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
+
+    // Prepare and then apply the LEDC PWM channel configuration
+    ledc_channel_config_t ledc_channel = {
+        .speed_mode     = LEDC_MODE,
+        .channel        = LEDC_CHANNEL,
+        .timer_sel      = LEDC_TIMER,
+        .intr_type      = LEDC_INTR_DISABLE,
+        .gpio_num       = GPIO_NUM_43,
+        .duty           = 0, // Set duty to 0%
+        .hpoint         = 0
+    };
+    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
+}
+
+
 
 /* 初始化 LCD */
 esp_err_t app_lcd_init(void)
@@ -103,7 +142,14 @@ esp_err_t app_lcd_init(void)
      esp_lcd_panel_invert_color(lcd_panel, true);
 
     // ✅ 打开背光
-    gpio_set_level(EXAMPLE_LCD_GPIO_BL, EXAMPLE_LCD_BL_ON_LEVEL);
+    // gpio_set_level(EXAMPLE_LCD_GPIO_BL, EXAMPLE_LCD_BL_ON_LEVEL);
+
+    ledc_init() ;
+    
+    ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, LEDC_DUTY));
+
+
+
     esp_lcd_panel_disp_on_off(lcd_panel, true);
 
     return ESP_OK;
