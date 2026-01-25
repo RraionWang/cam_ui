@@ -17,6 +17,8 @@
 #include "sdmmc_cmd.h"
 #include "driver/sdmmc_host.h"
 #include "tinyusb_default_config.h"
+#include "vars.h"
+#include "actions.h"
 
 // #include "sd_test_io.h"
 #if SOC_SDMMC_IO_POWER_EXTERNAL
@@ -485,6 +487,9 @@ void load_sd_jpg_to_obj(const char* path, lv_obj_t *obj)
 
 
 
+
+
+
 // 回调函数
 
 static void my_jpg_preview_cb(lv_event_t * e)
@@ -649,15 +654,21 @@ void fill_jpg_list(lv_obj_t *list)
     closedir(dir);
 
     lv_group_remove_all_objs(g_focus_group_browser_page);
+
     lv_obj_clean(list);
+
+   
 
     for (int i = 0; i < JPG_LIST_PAGE_SIZE; ++i) {
         lv_obj_t *btn = lv_list_add_button(list, LV_SYMBOL_IMAGE, "");
         s_jpg_btns[i] = btn;
         s_jpg_labels[i] = lv_obj_get_child(btn, -1);
         lv_group_add_obj(g_focus_group_browser_page, btn);
+                lv_group_add_obj(g_focus_group_browser_page, objects.bt_back_from_browser);
         lv_obj_add_event_cb(btn, my_jpg_preview_cb, LV_EVENT_FOCUSED, (void *)(intptr_t)i);
+        
     }
+   
 
     jpg_list_update_window();
 

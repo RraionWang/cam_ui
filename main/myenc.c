@@ -323,9 +323,9 @@ void start_jpeg_filter_task(void)
     "jpeg_filter_task",               // 任务名
     8192*8,                // 栈大小（单位：word，不是字节！）
     NULL,             // 参数
-    5,                        // 优先级
+    4,                        // 优先级
     NULL,                     // TaskHandle_t*
-    1,                        // 绑定 CPU1
+    0,                        // 绑定 CPU1
     MALLOC_CAP_SPIRAM         // 👈 强制栈从 PSRAM 分配
         );
 

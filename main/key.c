@@ -8,6 +8,9 @@
 #include "lcd.h"
 #include "lvgl.h"
 #include "freertos/FreeRTOS.h"
+#include "vars.h"
+#include "screens.h"
+#include "actions.h"
 
 
 
@@ -104,6 +107,8 @@ static void but3_cb(void *arg, void *usr_data)
     ESP_LOGI("BUT", "按键3");
     g_last_key = LV_KEY_ENTER;
     g_key_pressed = true;
+
+
 }
 
 void init_but(void)
