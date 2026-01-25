@@ -112,6 +112,28 @@ static void event_handler_cb_letter_page_bt_back_from_letter(lv_event_t *e) {
     }
 }
 
+static void event_handler_cb_letter_page_bt_letter_up(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    void *flowState = lv_event_get_user_data(e);
+    (void)flowState;
+    
+    if (event == LV_EVENT_CLICKED) {
+        e->user_data = (void *)0;
+        action_letter_up(e);
+    }
+}
+
+static void event_handler_cb_letter_page_bt_letter_down(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    void *flowState = lv_event_get_user_data(e);
+    (void)flowState;
+    
+    if (event == LV_EVENT_CLICKED) {
+        e->user_data = (void *)0;
+        action_letter_down(e);
+    }
+}
+
 void create_screen_main() {
     void *flowState = getFlowState(0, 0);
     (void)flowState;
@@ -443,9 +465,9 @@ void create_screen_letter_page() {
             lv_obj_t *obj = lv_textarea_create(parent_obj);
             objects.letter_text_obj = obj;
             lv_obj_set_pos(obj, 0, 11);
-            lv_obj_set_size(obj, 298, 156);
-            lv_textarea_set_max_length(obj, 128);
-            lv_textarea_set_text(obj, "没有特别对自己想说的，过好每一天，十年后你就 39 岁了，你有实现自己的梦想吗？去到想去的地方吗？");
+            lv_obj_set_size(obj, 290, 156);
+            lv_textarea_set_max_length(obj, 300);
+            lv_textarea_set_text(obj, "亲爱的丁，恭喜你即将迎来人生第26个春天。过去，你彷徨，迷茫，无措，独自经受痛苦，在荆棘与疮痍中被迫生根，但恭喜你走完人生一段又一段路，迈入每个新历程，你学会一次又一次跌倒，站起来，又跌倒，再站起来；恭喜你拥有了自己的第一只小猫，第一只小狗还有第二只小猫，你与他们分享感动与失落，从此之后，你的每一次外出“打猎”都有了动力，你的生活不再是静音与灰色，你感受到了来自他们唯一的爱；恭喜你在与父母相处中学会化解难题，恭喜你在与外人交际时学会课题分离；感谢你从未对未来失去过信心，感谢你开始学会好好爱自己，感谢每次天黑到天亮，你都陪着你……爱你老己，明天见！！");
             lv_textarea_set_one_line(obj, false);
             lv_textarea_set_password_mode(obj, false);
             lv_obj_set_style_text_font(obj, &ui_font_cn_font_16, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -469,6 +491,44 @@ void create_screen_letter_page() {
                 }
             }
         }
+        {
+            // bt_letter_up
+            lv_obj_t *obj = lv_button_create(parent_obj);
+            objects.bt_letter_up = obj;
+            lv_obj_set_pos(obj, 293, 51);
+            lv_obj_set_size(obj, 22, 35);
+            lv_obj_add_event_cb(obj, event_handler_cb_letter_page_bt_letter_up, LV_EVENT_ALL, flowState);
+            {
+                lv_obj_t *parent_obj = obj;
+                {
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.obj5 = obj;
+                    lv_obj_set_pos(obj, 0, 0);
+                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                    lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "");
+                }
+            }
+        }
+        {
+            // bt_letter_down
+            lv_obj_t *obj = lv_button_create(parent_obj);
+            objects.bt_letter_down = obj;
+            lv_obj_set_pos(obj, 293, 99);
+            lv_obj_set_size(obj, 22, 35);
+            lv_obj_add_event_cb(obj, event_handler_cb_letter_page_bt_letter_down, LV_EVENT_ALL, flowState);
+            {
+                lv_obj_t *parent_obj = obj;
+                {
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.obj6 = obj;
+                    lv_obj_set_pos(obj, 0, 0);
+                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                    lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "");
+                }
+            }
+        }
     }
     
     tick_screen_letter_page();
@@ -477,11 +537,29 @@ void create_screen_letter_page() {
 void tick_screen_letter_page() {
     void *flowState = getFlowState(0, 3);
     (void)flowState;
+    {
+        const char *new_val = evalTextProperty(flowState, 5, 3, "Failed to evaluate Text in Label widget");
+        const char *cur_val = lv_label_get_text(objects.obj5);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.obj5;
+            lv_label_set_text(objects.obj5, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = evalTextProperty(flowState, 7, 3, "Failed to evaluate Text in Label widget");
+        const char *cur_val = lv_label_get_text(objects.obj6);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = objects.obj6;
+            lv_label_set_text(objects.obj6, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
 }
 
 
 static const char *screen_names[] = { "Main", "shot", "browser_page", "letter_page" };
-static const char *object_names[] = { "main", "shot", "browser_page", "letter_page", "bt_browser_pics", "bt_shot", "bt_letter", "bt_back_from_shot", "pre_pocker_btn", "next_pocker_btn", "bt_back_from_browser", "file_list_obj", "bt_back_from_letter", "obj0", "shot_window_obj", "status_led", "obj1", "obj2", "obj3", "obj4", "pic_window_obj", "letter_text_obj" };
+static const char *object_names[] = { "main", "shot", "browser_page", "letter_page", "bt_browser_pics", "bt_shot", "bt_letter", "bt_back_from_shot", "pre_pocker_btn", "next_pocker_btn", "bt_back_from_browser", "file_list_obj", "bt_back_from_letter", "bt_letter_up", "bt_letter_down", "obj0", "shot_window_obj", "status_led", "obj1", "obj2", "obj3", "obj4", "pic_window_obj", "letter_text_obj", "obj5", "obj6" };
 
 
 typedef void (*tick_screen_func_t)();

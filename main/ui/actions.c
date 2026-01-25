@@ -129,3 +129,56 @@ void action_next_poker(lv_event_t *e) {
 }
 
 
+
+
+#define LETTER_SCROLL_RATIO   20   // 每次滚动 80% 可视高度
+
+void action_letter_up(lv_event_t *e)
+{
+    (void)e;
+
+    lv_obj_t *obj = objects.letter_text_obj;
+    if (!obj) {
+        return;
+    }
+
+    lv_coord_t h = lv_obj_get_height(obj);
+    lv_coord_t dy = (h * LETTER_SCROLL_RATIO) / 100;
+
+    lv_coord_t y = lv_obj_get_scroll_y(obj);
+    lv_coord_t max_down = lv_obj_get_scroll_bottom(obj);
+
+    /* ====== 已在最底：跳到最顶 ====== */
+    if (max_down == 0 || -y >= max_down) {
+        lv_obj_scroll_to_y(obj, 0, LV_ANIM_OFF);   // 回到最顶
+        return;
+    }
+
+    /* ====== 正常向下滚 ====== */
+    lv_obj_scroll_by(obj, 0, dy, LV_ANIM_OFF);
+}
+
+void action_letter_down(lv_event_t *e)
+{
+    (void)e;
+
+    lv_obj_t *obj = objects.letter_text_obj;
+    if (!obj) {
+        return;
+    }
+
+    lv_coord_t h = lv_obj_get_height(obj);
+    lv_coord_t dy = -(h * LETTER_SCROLL_RATIO) / 100;
+
+    lv_coord_t y = lv_obj_get_scroll_y(obj);
+    lv_coord_t max_down = lv_obj_get_scroll_bottom(obj);
+
+    /* ====== 已在最顶：跳到最底 ====== */
+    if (y == 0 && max_down > 0) {
+        lv_obj_scroll_to_y(obj, -max_down, LV_ANIM_OFF);  // 跳到最底
+        return;
+    }
+
+    /* ====== 正常向上滚 ====== */
+    lv_obj_scroll_by(obj, 0, dy, LV_ANIM_OFF);
+}

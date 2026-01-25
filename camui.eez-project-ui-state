@@ -1,7 +1,8 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[camui.eez-project]:/userPages/0",
-    "selectedGlobalVariableObject": "[camui.eez-project]:/variables/globalVariables/4",
+    "selectedUserPageObject": "[camui.eez-project]:/userPages/3",
+    "selectedActionObject": "[camui.eez-project]:/actions/1",
+    "selectedGlobalVariableObject": "[camui.eez-project]:/variables/globalVariables/1",
     "selectedFontObject": "[camui.eez-project]:/fonts/0",
     "subnavigationSelectedItems": {
       "variables-tab/sub-navigation/selected-item": "Global"
@@ -200,10 +201,21 @@
               "type": "tabset",
               "id": "EDITORS",
               "weight": 40.977810519169026,
-              "selected": 2,
+              "selected": 3,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
+                {
+                  "type": "tab",
+                  "id": "#fd831e0f-1878-426e-b642-e1e7691c7300",
+                  "name": "next_pic",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[camui.eez-project]:/actions/1",
+                    "permanent": false
+                  },
+                  "icon": "material:code"
+                },
                 {
                   "type": "tab",
                   "id": "#6c0ef8f8-b76b-4f64-ba70-cccf5ebc5133",
@@ -230,10 +242,10 @@
                 {
                   "type": "tab",
                   "id": "#5d92e4bc-7dc4-418c-a71c-ccd05c0851c2",
-                  "name": "Main",
+                  "name": "letter_page",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[camui.eez-project]:/userPages/0",
+                    "objectPath": "[camui.eez-project]:/userPages/3",
                     "permanent": false
                   },
                   "icon": "svg:page"
@@ -1338,10 +1350,10 @@
       },
       "transform": {
         "translate": {
-          "x": -701.3125,
-          "y": 196.875
+          "x": -169.6301066217734,
+          "y": 98.81312850729518
         },
-        "scale": 1.25
+        "scale": 1.5
       },
       "timeline": {
         "isEditorActive": false,
@@ -1354,17 +1366,17 @@
       "selection": {
         "0": {
           "0": {},
-          "1": {
-            "$selected": true
-          }
+          "1": {},
+          "2": {},
+          "3": {}
         }
       },
       "transform": {
         "translate": {
-          "x": -282,
-          "y": -158
+          "x": -320.13636363636357,
+          "y": -190.7272727272727
         },
-        "scale": 1.25
+        "scale": 1.5
       },
       "timeline": {
         "isEditorActive": false,
@@ -1374,13 +1386,20 @@
       }
     },
     "[camui.eez-project]:/userPages/2[flow-state]": {
-      "selection": {},
+      "selection": {
+        "0": {
+          "2": {}
+        },
+        "4": {
+          "$selected": true
+        }
+      },
       "transform": {
         "translate": {
-          "x": -160,
-          "y": -86
+          "x": -182.76205283108243,
+          "y": -150.06394811656003
         },
-        "scale": 1.25
+        "scale": 1.1
       },
       "timeline": {
         "isEditorActive": false,
@@ -1393,17 +1412,21 @@
       "selection": {
         "0": {
           "1": {},
-          "3": {},
+          "3": {
+            "0": {
+              "$selected": true
+            }
+          },
           "4": {},
           "7": {}
         }
       },
       "transform": {
         "translate": {
-          "x": -391,
-          "y": -183
+          "x": -189.4000000000001,
+          "y": 18.799999999999983
         },
-        "scale": 2
+        "scale": 1.5
       },
       "timeline": {
         "isEditorActive": false,
@@ -1471,6 +1494,16 @@
         },
         "scale": 1
       }
+    },
+    "[camui.eez-project]:/actions/8[flow-state]": {
+      "selection": {},
+      "transform": {
+        "translate": {
+          "x": 0,
+          "y": 0
+        },
+        "scale": 1
+      }
     }
   },
   "activeOutputSection": 0,
@@ -1492,6 +1525,6 @@
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
-  "flowZoom": 1.25,
+  "flowZoom": 1.5,
   "implementationLanguage": "C"
 }

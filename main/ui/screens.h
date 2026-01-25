@@ -21,6 +21,8 @@ typedef struct _objects_t {
     lv_obj_t *bt_back_from_browser;
     lv_obj_t *file_list_obj;
     lv_obj_t *bt_back_from_letter;
+    lv_obj_t *bt_letter_up;
+    lv_obj_t *bt_letter_down;
     lv_obj_t *obj0;
     lv_obj_t *shot_window_obj;
     lv_obj_t *status_led;
@@ -30,6 +32,8 @@ typedef struct _objects_t {
     lv_obj_t *obj4;
     lv_obj_t *pic_window_obj;
     lv_obj_t *letter_text_obj;
+    lv_obj_t *obj5;
+    lv_obj_t *obj6;
 } objects_t;
 
 extern objects_t objects;

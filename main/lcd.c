@@ -1,6 +1,5 @@
 #include "lcd.h"
 
-
 #include "pin.h"
 #include "esp_err.h"
 #include "esp_log.h"
@@ -15,35 +14,25 @@
 #include "esp_lvgl_port.h"
 #include "esp_lvgl_port_disp.h"
 
-
-#include "ui/ui.h"  // 引入 UI 头文件
+#include "ui/ui.h" // 引入 UI 头文件
 #include "lvgl.h"
 
-
-
-
 /* LCD size */
-#define EXAMPLE_LCD_H_RES   (172)
-#define EXAMPLE_LCD_V_RES   (320)
+#define EXAMPLE_LCD_H_RES (172)
+#define EXAMPLE_LCD_V_RES (320)
 
 /* LCD settings */
-#define EXAMPLE_LCD_SPI_NUM         (SPI3_HOST)
-#define EXAMPLE_LCD_PIXEL_CLK_HZ    (20 * 1000 * 1000)
-#define EXAMPLE_LCD_CMD_BITS        (8)
-#define EXAMPLE_LCD_PARAM_BITS      (8)
-#define EXAMPLE_LCD_BITS_PER_PIXEL  (16)
+#define EXAMPLE_LCD_SPI_NUM (SPI3_HOST)
+#define EXAMPLE_LCD_PIXEL_CLK_HZ (20 * 1000 * 1000)
+#define EXAMPLE_LCD_CMD_BITS (8)
+#define EXAMPLE_LCD_PARAM_BITS (8)
+#define EXAMPLE_LCD_BITS_PER_PIXEL (16)
 #define EXAMPLE_LCD_DRAW_BUFF_DOUBLE (1)
 #define EXAMPLE_LCD_DRAW_BUFF_HEIGHT (50)
-#define EXAMPLE_LCD_BL_ON_LEVEL     (0)
-
-
-
+#define EXAMPLE_LCD_BL_ON_LEVEL (0)
 
 volatile uint32_t g_last_key = 0;
 volatile bool g_key_pressed = false;
-
-
-
 
 static const char *TAG = "LCD";
 
@@ -51,42 +40,37 @@ static esp_lcd_panel_io_handle_t lcd_io = NULL;
 static esp_lcd_panel_handle_t lcd_panel = NULL;
 static lv_display_t *lvgl_disp = NULL;
 
-
 #include "driver/ledc.h"
 
-#define LEDC_TIMER              LEDC_TIMER_0
-#define LEDC_MODE               LEDC_LOW_SPEED_MODE
-#define LEDC_CHANNEL            LEDC_CHANNEL_0
-#define LEDC_DUTY_RES           LEDC_TIMER_13_BIT // Set duty resolution to 13 bits
-#define LEDC_DUTY               (4096) // Set duty to 50%. (2 ** 13) * 50% = 4096
-#define LEDC_FREQUENCY          (4000) // Frequency in Hertz. Set frequency at 4 kHz
+#define LEDC_TIMER LEDC_TIMER_0
+#define LEDC_MODE LEDC_LOW_SPEED_MODE
+#define LEDC_CHANNEL LEDC_CHANNEL_0
+#define LEDC_DUTY_RES LEDC_TIMER_13_BIT // Set duty resolution to 13 bits
+#define LEDC_DUTY (4096)                // Set duty to 50%. (2 ** 13) * 50% = 4096
+#define LEDC_FREQUENCY (4000)           // Frequency in Hertz. Set frequency at 4 kHz
 
 static void ledc_init(void)
 {
     // Prepare and then apply the LEDC PWM timer configuration
     ledc_timer_config_t ledc_timer = {
-        .speed_mode       = LEDC_MODE,
-        .duty_resolution  = LEDC_DUTY_RES,
-        .timer_num        = LEDC_TIMER,
-        .freq_hz          = LEDC_FREQUENCY,  // Set output frequency at 4 kHz
-        .clk_cfg          = LEDC_AUTO_CLK
-    };
+        .speed_mode = LEDC_MODE,
+        .duty_resolution = LEDC_DUTY_RES,
+        .timer_num = LEDC_TIMER,
+        .freq_hz = LEDC_FREQUENCY, // Set output frequency at 4 kHz
+        .clk_cfg = LEDC_AUTO_CLK};
     ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
 
     // Prepare and then apply the LEDC PWM channel configuration
     ledc_channel_config_t ledc_channel = {
-        .speed_mode     = LEDC_MODE,
-        .channel        = LEDC_CHANNEL,
-        .timer_sel      = LEDC_TIMER,
-        .intr_type      = LEDC_INTR_DISABLE,
-        .gpio_num       = GPIO_NUM_43,
-        .duty           = 0, // Set duty to 0%
-        .hpoint         = 0
-    };
+        .speed_mode = LEDC_MODE,
+        .channel = LEDC_CHANNEL,
+        .timer_sel = LEDC_TIMER,
+        .intr_type = LEDC_INTR_DISABLE,
+        .gpio_num = GPIO_NUM_43,
+        .duty = 0, // Set duty to 0%
+        .hpoint = 0};
     ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
 }
-
-
 
 /* 初始化 LCD */
 esp_err_t app_lcd_init(void)
@@ -95,8 +79,7 @@ esp_err_t app_lcd_init(void)
 
     gpio_config_t bk_gpio_config = {
         .mode = GPIO_MODE_OUTPUT,
-        .pin_bit_mask = 1ULL << EXAMPLE_LCD_GPIO_BL
-    };
+        .pin_bit_mask = 1ULL << EXAMPLE_LCD_GPIO_BL};
     ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
 
     const spi_bus_config_t buscfg = {
@@ -139,44 +122,37 @@ esp_err_t app_lcd_init(void)
     esp_lcd_panel_set_gap(lcd_panel, 0, 34);
 
     // // ✅ 关闭反色
-     esp_lcd_panel_invert_color(lcd_panel, true);
+    esp_lcd_panel_invert_color(lcd_panel, true);
 
     // ✅ 打开背光
     // gpio_set_level(EXAMPLE_LCD_GPIO_BL, EXAMPLE_LCD_BL_ON_LEVEL);
 
-    ledc_init() ;
-    
+    ledc_init();
+
     ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, LEDC_DUTY));
-
-
 
     esp_lcd_panel_disp_on_off(lcd_panel, true);
 
     return ESP_OK;
 
 err:
-    if (lcd_panel) esp_lcd_panel_del(lcd_panel);
-    if (lcd_io) esp_lcd_panel_io_del(lcd_io);
+    if (lcd_panel)
+        esp_lcd_panel_del(lcd_panel);
+    if (lcd_io)
+        esp_lcd_panel_io_del(lcd_io);
     spi_bus_free(EXAMPLE_LCD_SPI_NUM);
     return ret;
 }
 
-
-
-
-
-
-
 /* 初始化 LVGL */
- esp_err_t app_lvgl_init(void)
+esp_err_t app_lvgl_init(void)
 {
     const lvgl_port_cfg_t lvgl_cfg = {
         .task_priority = 4,
         .task_stack = 8192,
         .task_affinity = -1,
         .task_max_sleep_ms = 500,
-        .timer_period_ms = 5
-    };
+        .timer_period_ms = 5};
     ESP_RETURN_ON_ERROR(lvgl_port_init(&lvgl_cfg), TAG, "LVGL init failed");
 
     const lvgl_port_display_cfg_t disp_cfg = {
@@ -186,105 +162,81 @@ err:
         .double_buffer = EXAMPLE_LCD_DRAW_BUFF_DOUBLE,
         .hres = EXAMPLE_LCD_H_RES,
         .vres = EXAMPLE_LCD_V_RES,
-        .rotation = { .swap_xy = false, .mirror_x = false, .mirror_y = false },
-        .flags = { .buff_dma = true, .swap_bytes = true }
-    };
+        .rotation = {.swap_xy = false, .mirror_x = false, .mirror_y = false},
+        .flags = {.buff_dma = true, .swap_bytes = true}};
     lvgl_disp = lvgl_port_add_disp(&disp_cfg);
 
-
-    ESP_LOGI("TAG","befor rotation is %d",    lvgl_disp->rotation);
+    ESP_LOGI("TAG", "befor rotation is %d", lvgl_disp->rotation);
 
     lv_disp_set_rotation(lvgl_disp, LV_DISPLAY_ROTATION_270);
 
-    ESP_LOGI("TAG","after rotation is %d",    lvgl_disp->rotation);
+    ESP_LOGI("TAG", "after rotation is %d", lvgl_disp->rotation);
 
-
-   return ESP_OK;
-
+    return ESP_OK;
 }
 
-
-
-
-void read_cb(lv_indev_t* indev, lv_indev_data_t* data)
+void read_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {
-    if (g_key_pressed) {
+    if (g_key_pressed)
+    {
         data->state = LV_INDEV_STATE_PRESSED;
-        data->key   = g_last_key;
-        g_key_pressed = false;   // ⭐ 一次性消费
-    } else {
+        data->key = g_last_key;
+        g_key_pressed = false; // ⭐ 一次性消费
+    }
+    else
+    {
         data->state = LV_INDEV_STATE_RELEASED;
     }
 }
 
-
-
-lv_group_t* g_focus_group_main ;
-lv_group_t* g_focus_group_shot ;
-lv_group_t* g_focus_group_browser_page ;
-lv_group_t* g_focus_group_letter_page ;
-
+lv_group_t *g_focus_group_main;
+lv_group_t *g_focus_group_shot;
+lv_group_t *g_focus_group_browser_page;
+lv_group_t *g_focus_group_letter_page;
 
 #include "screens.h"
 
-
-
-void init_all_focus_group(){
-       g_focus_group_main = lv_group_create();
+void init_all_focus_group()
+{
+    g_focus_group_main = lv_group_create();
     g_focus_group_shot = lv_group_create();
-             g_focus_group_browser_page = lv_group_create();
-             g_focus_group_letter_page = lv_group_create() ; 
+    g_focus_group_browser_page = lv_group_create();
+    g_focus_group_letter_page = lv_group_create();
 
+    lv_group_set_wrap(g_focus_group_main, true); // ⭐ 关键
+    lv_group_add_obj(g_focus_group_main, objects.bt_browser_pics);
+    lv_group_add_obj(g_focus_group_main, objects.bt_shot);
+    lv_group_add_obj(g_focus_group_main, objects.bt_letter);
 
-
-
-    lv_group_set_wrap(g_focus_group_main, true);   // ⭐ 关键
-    lv_group_add_obj(g_focus_group_main,objects.bt_browser_pics);
-    lv_group_add_obj(g_focus_group_main,objects.bt_shot);
-    lv_group_add_obj(g_focus_group_main,objects.bt_letter); 
- 
-
-
-    lv_group_set_wrap(g_focus_group_browser_page, true);   // ⭐ 关键
+    lv_group_set_wrap(g_focus_group_browser_page, true); // ⭐ 关键
 
     // 不要选中列表为可聚焦的，这样当切换到最后一个的时候就会出现选中
     // lv_group_add_obj(g_focus_group_browser_page,objects.file_list_obj);
-    lv_group_add_obj(g_focus_group_browser_page,objects.bt_back_from_browser);
+    lv_group_add_obj(g_focus_group_browser_page, objects.bt_back_from_browser);
 
+    lv_group_set_wrap(g_focus_group_shot, true); // ⭐ 关键
+    lv_group_add_obj(g_focus_group_shot, objects.bt_back_from_shot);
+    lv_group_add_obj(g_focus_group_shot, objects.pre_pocker_btn);
+    lv_group_add_obj(g_focus_group_shot, objects.next_pocker_btn);
 
-
-    lv_group_set_wrap(g_focus_group_shot, true);   // ⭐ 关键
-    lv_group_add_obj(g_focus_group_shot,objects.bt_back_from_shot);
-    lv_group_add_obj(g_focus_group_shot,objects.pre_pocker_btn);
-    lv_group_add_obj(g_focus_group_shot,objects.next_pocker_btn);
-
-
-    lv_group_set_wrap(g_focus_group_letter_page, true);   // ⭐ 关键
-    lv_group_add_obj(g_focus_group_letter_page,objects.bt_back_from_letter);
-
-
-
-
-
-
+    lv_group_set_wrap(g_focus_group_letter_page, true); // ⭐ 关键
+    lv_group_add_obj(g_focus_group_letter_page, objects.bt_back_from_letter);
+    lv_group_add_obj(g_focus_group_letter_page, objects.bt_letter_up);
+    lv_group_add_obj(g_focus_group_letter_page, objects.bt_letter_down);
 }
 
+lv_indev_t *indev;
 
-
- lv_indev_t* indev  ; 
-
-void binding_key() {
-    init_all_focus_group() ; 
+void binding_key()
+{
+    init_all_focus_group();
     // 必须在 lvgl_port_init 之后调用
-     indev = lv_indev_create();
+    indev = lv_indev_create();
     lv_indev_set_type(indev, LV_INDEV_TYPE_KEYPAD);
     lv_indev_set_read_cb(indev, read_cb);
-    
+
     // 创建一个焦点组并绑定到输入设备，否则按键不知道发给谁
 
     lv_group_set_default(g_focus_group_main);
     lv_indev_set_group(indev, g_focus_group_main);
 }
-
-
-
