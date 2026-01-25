@@ -197,11 +197,6 @@ void init_all_focus_group(){
     lv_group_add_obj(g_focus_group_main,objects.bt_shot);
     lv_group_add_obj(g_focus_group_main,objects.bt_letter); 
  
-    
-    
-
-    
-
 
 
     lv_group_set_wrap(g_focus_group_browser_page, true);   // ⭐ 关键
@@ -214,8 +209,8 @@ void init_all_focus_group(){
 
     lv_group_set_wrap(g_focus_group_shot, true);   // ⭐ 关键
     lv_group_add_obj(g_focus_group_shot,objects.bt_back_from_shot);
-        lv_group_add_obj(g_focus_group_shot,objects.pre_pocker_btn);
-         lv_group_add_obj(g_focus_group_shot,objects.next_pocker_btn);
+    lv_group_add_obj(g_focus_group_shot,objects.pre_pocker_btn);
+    lv_group_add_obj(g_focus_group_shot,objects.next_pocker_btn);
 
 
     lv_group_set_wrap(g_focus_group_letter_page, true);   // ⭐ 关键

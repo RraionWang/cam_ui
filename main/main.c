@@ -68,7 +68,20 @@ static void print_mem_task(void *arg)
 
 void app_main(){
 
-   xTaskCreate(print_mem_task, "printmeme", 4096, NULL, 5, NULL);
+  //  xTaskCreate(print_mem_task, "printmeme", 4096, NULL, 5, NULL);
+
+       xTaskCreatePinnedToCoreWithCaps(
+    print_mem_task,          // 任务函数
+    "cam_task",               // 任务名
+   4096,                // 栈大小（单位：word，不是字节！）
+    NULL,             // 参数
+    5,                        // 优先级
+    NULL,                     // TaskHandle_t*
+    1,                        // 绑定 CPU1
+    MALLOC_CAP_SPIRAM         // 👈 强制栈从 PSRAM 分配
+);
+
+
 
 
     sdmmc_card_t* card = init_sdcard() ; 
@@ -93,7 +106,21 @@ void app_main(){
     fill_jpg_list(objects.file_list_obj) ; 
 
       
-    xTaskCreatePinnedToCore(tick_task, "tick_task", 8192*4, NULL, 5, NULL,0);
+    // xTaskCreatePinnedToCore(tick_task, "tick_task", 8192*4, NULL, 5, NULL,0);
+
+    
+        xTaskCreatePinnedToCoreWithCaps(
+    tick_task,          // 任务函数
+    "tick_task",               // 任务名
+    8192,                // 栈大小（单位：word，不是字节！）
+    NULL,             // 参数
+    5,                        // 优先级
+    NULL,                     // TaskHandle_t*
+    1,                        // 绑定 CPU1
+    MALLOC_CAP_SPIRAM         // 👈 强制栈从 PSRAM 分配
+        );
+
+
    
     
     cam_init_and_start(objects.shot_window_obj);

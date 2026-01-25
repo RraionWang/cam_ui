@@ -27,6 +27,7 @@
 #include <dirent.h>
 
 #include <sys/stat.h>
+#include "esp_heap_caps.h"
 
 #define IMAGE_EXT       ".jpg"
 
@@ -331,5 +332,20 @@ void cam_init_and_start(lv_obj_t *ui_container)
     }
 
     // 3. 开启相机渲染处理任务 (绑定到 Core 1 以免影响 UI 交互)
-    xTaskCreatePinnedToCore(cam_render_task, "cam_task", 1024 * 20, ui_container, 5, NULL, 1);
+    // xTaskCreatePinnedToCore(cam_render_task, "cam_task", 1024 * 20, ui_container, 5, NULL, 1);
+
+
+    xTaskCreatePinnedToCoreWithCaps(
+    cam_render_task,          // 任务函数
+    "cam_task",               // 任务名
+    1024 * 20,                // 栈大小（单位：word，不是字节！）
+    ui_container,             // 参数
+    5,                        // 优先级
+    NULL,                     // TaskHandle_t*
+    1,                        // 绑定 CPU1
+    MALLOC_CAP_SPIRAM         // 👈 强制栈从 PSRAM 分配
+);
+
+
+
 }

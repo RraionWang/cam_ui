@@ -9,6 +9,8 @@
 // This example uses SDMMC peripheral to communicate with SD card.
 
 #include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
 #include "esp_vfs_fat.h"
@@ -348,12 +350,14 @@ static void delete_old_img_cb(lv_event_t * e) {
     if(data) free(data); // 释放解码出来的 RGB565 缓冲区
 }
 
+
+
+
 static void show_jpg_in_obj(lv_obj_t *parent, uint8_t *rgb565, int w, int h)
 {
-    // 1. 清除父容器里旧的预览图，触发 DELETE 事件释放内存
-    lv_obj_clean(parent); 
+    lv_obj_clean(parent);
 
-    static lv_image_dsc_t img_dsc; // 注意：如果是单实例预览，dsc 可以静态
+    static lv_image_dsc_t img_dsc;
     img_dsc.header.cf = LV_COLOR_FORMAT_RGB565;
     img_dsc.header.w  = h;
     img_dsc.header.h  = w;
@@ -365,15 +369,84 @@ static void show_jpg_in_obj(lv_obj_t *parent, uint8_t *rgb565, int w, int h)
     lv_image_set_src(img, &img_dsc);
     lv_obj_center(img);
 
-    // 2. 当这个图片对象被删除时，自动释放这一坨 rgb565 内存
-    lv_obj_add_event_cb(img, delete_old_img_cb, LV_EVENT_DELETE, rgb565);
+    // ❌ 不再让 LVGL free 这坨内存
+    // lv_obj_add_event_cb(img, delete_old_img_cb, LV_EVENT_DELETE, rgb565);
 }
+
+
 
 
 #include <dirent.h>
 #include <string.h>
 
 #include "screens.h"
+
+// JPG browser list virtualization
+#define JPG_LIST_PAGE_SIZE 6
+#define JPG_PATH_MAX_LEN 128
+
+static lv_obj_t *s_jpg_btns[JPG_LIST_PAGE_SIZE];
+static lv_obj_t *s_jpg_labels[JPG_LIST_PAGE_SIZE];
+static char **s_jpg_names;
+static int s_jpg_count;
+static int s_jpg_offset;
+static bool s_jpg_updating;
+static char s_last_preview[JPG_PATH_MAX_LEN];
+
+
+// ===== 预览缓存（单槽）=====
+static char     s_cached_name[JPG_PATH_MAX_LEN];
+static uint8_t *s_cached_rgb565 = NULL;
+static int      s_cached_w = 0;
+static int      s_cached_h = 0;
+
+
+static void jpg_list_free_cache(void)
+{
+    if (s_jpg_names) {
+        for (int i = 0; i < s_jpg_count; ++i) {
+            free(s_jpg_names[i]);
+        }
+        free(s_jpg_names);
+    }
+    s_jpg_names = NULL;
+    s_jpg_count = 0;
+    s_jpg_offset = 0;
+    s_last_preview[0] = '\0';
+}
+
+static void jpg_list_update_window(void)
+{
+    for (int i = 0; i < JPG_LIST_PAGE_SIZE; ++i) {
+        int idx = s_jpg_offset + i;
+        lv_obj_t *btn = s_jpg_btns[i];
+        lv_obj_t *label = s_jpg_labels[i];
+        if (!btn || !label) {
+            continue;
+        }
+
+        if (idx < s_jpg_count) {
+            lv_label_set_text(label, s_jpg_names[idx]);
+            lv_obj_clear_state(btn, LV_STATE_DISABLED);
+        } else {
+            lv_label_set_text(label, "");
+            lv_obj_add_state(btn, LV_STATE_DISABLED);
+        }
+    }
+}
+
+static void jpg_list_focus_btn(int idx)
+{
+    if (idx < 0 || idx >= JPG_LIST_PAGE_SIZE) {
+        return;
+    }
+    if (!s_jpg_btns[idx]) {
+        return;
+    }
+    s_jpg_updating = true;
+    lv_group_focus_obj(s_jpg_btns[idx]);
+    s_jpg_updating = false;
+}
 
 
 
@@ -413,27 +486,124 @@ void load_sd_jpg_to_obj(const char* path, lv_obj_t *obj)
 
 
 // 回调函数
+
 static void my_jpg_preview_cb(lv_event_t * e)
 {
-    lv_obj_t * btn = lv_event_get_target(e);    // 当前获得焦点的按钮
-    lv_obj_t * list = lv_obj_get_parent(lv_obj_get_parent(btn)); // 按钮的爷爷是 List 对象
+    bool ignore_scroll = s_jpg_updating;
+    int btn_idx = (int)(intptr_t)lv_event_get_user_data(e);
 
-    // 1. 获取按钮上的文件名
-    const char * file_name = lv_list_get_button_text(list, btn);
+    /* ====== 滚动窗口逻辑（保持你原来的）====== */
 
-    if (file_name) {
-        // 2. 拼接完整路径
-        char full_path[128];
-        snprintf(full_path, sizeof(full_path), "/sdcard/%s", file_name);
+    if (!ignore_scroll &&
+        (g_last_key == LV_KEY_DOWN || g_last_key == LV_KEY_NEXT) &&
+        btn_idx == 0 &&
+        (s_jpg_offset + JPG_LIST_PAGE_SIZE) < s_jpg_count) {
 
-        ESP_LOGI("JPG", "Focus changed to: %s", full_path);
-
-      
-
-
-        load_sd_jpg_to_obj(full_path,objects.pic_window_obj) ;
+        s_jpg_offset++;
+        jpg_list_update_window();
+        jpg_list_focus_btn(JPG_LIST_PAGE_SIZE - 1);
+        return;
     }
+
+    if (!ignore_scroll &&
+        (g_last_key == LV_KEY_UP || g_last_key == LV_KEY_PREV) &&
+        btn_idx == (JPG_LIST_PAGE_SIZE - 1) &&
+        s_jpg_offset > 0) {
+
+        s_jpg_offset--;
+        jpg_list_update_window();
+        jpg_list_focus_btn(0);
+        return;
+    }
+
+    if (btn_idx < 0 || btn_idx >= JPG_LIST_PAGE_SIZE) {
+        return;
+    }
+
+    /* ====== ✅ 正确：映射到真实 JPG 索引 ====== */
+
+    int real_idx = s_jpg_offset + btn_idx;
+    if (real_idx < 0 || real_idx >= s_jpg_count) {
+        return;
+    }
+
+    const char *file_name = s_jpg_names[real_idx];
+    if (!file_name || file_name[0] == '\0') {
+        return;
+    }
+
+    /* ====== 2️⃣ 预览缓存命中：直接复用 ====== */
+
+    if (strcmp(file_name, s_cached_name) == 0 &&
+        s_cached_rgb565 != NULL) {
+
+        ESP_LOGI("JPG", "Preview cache hit: %s", file_name);
+        show_jpg_in_obj(objects.pic_window_obj,
+                        s_cached_rgb565,
+                        s_cached_w,
+                        s_cached_h);
+        return;
+    }
+
+    /* ====== 1️⃣ 避免同一文件重复触发 ====== */
+
+    if (strncmp(file_name, s_last_preview, sizeof(s_last_preview)) == 0) {
+        return;
+    }
+
+    snprintf(s_last_preview, sizeof(s_last_preview), "%s", file_name);
+
+    char full_path[JPG_PATH_MAX_LEN];
+    snprintf(full_path, sizeof(full_path), "/sdcard/%s", file_name);
+
+    ESP_LOGI("JPG", "Focus changed to: %s", full_path);
+
+    /* ====== 真正加载 + 解码 ====== */
+
+    uint8_t *jpg_buf = NULL;
+    int jpg_len = 0;
+
+    if (read_file_to_mem(full_path, &jpg_buf, &jpg_len) != ESP_OK) {
+        ESP_LOGE("JPG", "read failed: %s", full_path);
+        return;
+    }
+
+    uint8_t *rgb565 = NULL;
+    int rgb_len = 0;
+
+    jpeg_error_t ret = esp_jpeg_decode_to_rgb565(
+        jpg_buf, jpg_len,
+        96, 160,
+        &rgb565, &rgb_len
+    );
+
+    free(jpg_buf);
+
+    if (ret != JPEG_ERR_OK || !rgb565) {
+        ESP_LOGE("JPG", "decode failed: %s", full_path);
+        return;
+    }
+
+    /* ====== 更新预览缓存（释放旧的）====== */
+
+    if (s_cached_rgb565) {
+        free(s_cached_rgb565);
+        s_cached_rgb565 = NULL;
+    }
+
+    snprintf(s_cached_name, sizeof(s_cached_name), "%s", file_name);
+    s_cached_rgb565 = rgb565;
+    s_cached_w = 160;
+    s_cached_h = 96;
+
+    /* ====== 显示图片（⚠️ 不再让 LVGL 接管 free）====== */
+
+    show_jpg_in_obj(objects.pic_window_obj,
+                    s_cached_rgb565,
+                    s_cached_w,
+                    s_cached_h);
 }
+
 
 
 void fill_jpg_list(lv_obj_t *list)
@@ -444,35 +614,57 @@ void fill_jpg_list(lv_obj_t *list)
         return;
     }
 
-    // 清空旧列表项
-    lv_obj_clean(list);
+    jpg_list_free_cache();
 
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
-        if (entry->d_type != DT_REG) continue;
-
         const char *name = entry->d_name;
         int len = strlen(name);
         if (len < 4) continue;
 
         if (strcasecmp(name + len - 4, ".jpg") == 0) {
-            // 1. 创建列表按钮
-            lv_obj_t * btn = lv_list_add_button(list, LV_SYMBOL_IMAGE, name);
+            char **new_list = heap_caps_realloc(
+                s_jpg_names,
+                sizeof(char *) * (s_jpg_count + 1),
+                MALLOC_CAP_SPIRAM
+            );
+            if (!new_list) {
+                ESP_LOGE("SD", "jpg list realloc failed");
+                break;
+            }
 
-            // 确保键盘焦点落在浏览页面的组，而不是默认的 main 组
-            lv_group_add_obj(g_focus_group_browser_page, btn);
+            s_jpg_names = new_list;
 
-            // 2. 绑定聚焦事件
-            // 我们不传 flowState，而是直接传 NULL 或者特定的上下文
-            lv_obj_add_event_cb(btn, my_jpg_preview_cb, LV_EVENT_FOCUSED, NULL);
-         
+            char *dup = heap_caps_malloc(strlen(name) + 1, MALLOC_CAP_SPIRAM);
+            if (!dup) {
+                ESP_LOGE("SD", "jpg name alloc failed");
+                break;
+            }
+            strcpy(dup, name);
+
+            s_jpg_names[s_jpg_count] = dup;
+            s_jpg_count++;
         }
     }
     closedir(dir);
+
+    lv_group_remove_all_objs(g_focus_group_browser_page);
+    lv_obj_clean(list);
+
+    for (int i = 0; i < JPG_LIST_PAGE_SIZE; ++i) {
+        lv_obj_t *btn = lv_list_add_button(list, LV_SYMBOL_IMAGE, "");
+        s_jpg_btns[i] = btn;
+        s_jpg_labels[i] = lv_obj_get_child(btn, -1);
+        lv_group_add_obj(g_focus_group_browser_page, btn);
+        lv_obj_add_event_cb(btn, my_jpg_preview_cb, LV_EVENT_FOCUSED, (void *)(intptr_t)i);
+    }
+
+    jpg_list_update_window();
+
+    if (s_jpg_count > 0) {
+        jpg_list_focus_btn(0);
+    }
 }
-
-
-
 
 
 // 

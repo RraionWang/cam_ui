@@ -307,15 +307,29 @@ void start_jpeg_filter_task(void)
 
 
 
-    xTaskCreatePinnedToCore(
-        jpeg_filter_task,
-        "jpeg_filter_task",
-        8192 * 8,
-        NULL,
-        4,
-        NULL,
-        0
-    );
+    // xTaskCreatePinnedToCore(
+    //     jpeg_filter_task,
+    //     "jpeg_filter_task",
+    //     8192 * 8,
+    //     NULL,
+    //     4,
+    //     NULL,
+    //     0
+    // );
+
+
+            xTaskCreatePinnedToCoreWithCaps(
+    jpeg_filter_task,          // 任务函数
+    "jpeg_filter_task",               // 任务名
+    8192*8,                // 栈大小（单位：word，不是字节！）
+    NULL,             // 参数
+    5,                        // 优先级
+    NULL,                     // TaskHandle_t*
+    1,                        // 绑定 CPU1
+    MALLOC_CAP_SPIRAM         // 👈 强制栈从 PSRAM 分配
+        );
+
+
 }
 
 

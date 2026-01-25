@@ -1,6 +1,6 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[camui.eez-project]:/userPages/3",
+    "selectedUserPageObject": "[camui.eez-project]:/userPages/0",
     "selectedGlobalVariableObject": "[camui.eez-project]:/variables/globalVariables/4",
     "selectedFontObject": "[camui.eez-project]:/fonts/0",
     "subnavigationSelectedItems": {
@@ -230,10 +230,10 @@
                 {
                   "type": "tab",
                   "id": "#5d92e4bc-7dc4-418c-a71c-ccd05c0851c2",
-                  "name": "letter_page",
+                  "name": "Main",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[camui.eez-project]:/userPages/3",
+                    "objectPath": "[camui.eez-project]:/userPages/0",
                     "permanent": false
                   },
                   "icon": "svg:page"
@@ -1328,17 +1328,18 @@
     "[camui.eez-project]:/userPages/0[flow-state]": {
       "selection": {
         "0": {
+          "0": {
+            "$selected": true
+          },
           "2": {
-            "0": {
-              "$selected": true
-            }
+            "0": {}
           }
         }
       },
       "transform": {
         "translate": {
-          "x": -280.3125,
-          "y": -123.125
+          "x": -701.3125,
+          "y": 196.875
         },
         "scale": 1.25
       },
@@ -1360,8 +1361,8 @@
       },
       "transform": {
         "translate": {
-          "x": -479,
-          "y": -145
+          "x": -282,
+          "y": -158
         },
         "scale": 1.25
       },
